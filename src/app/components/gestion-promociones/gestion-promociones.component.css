@@ -1,0 +1,25 @@
+label {
+  display: inline-block;
+  width: 180px;     
+  margin: 4px 0;
+}
+
+input, select {
+  width: 220px;      
+  padding: 2px;
+}
+
+button {
+  margin-top: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+ul {
+  margin-top: 12px;
+  padding-left: 20px; 
+}
+
+li {
+  margin-bottom: 8px;
+}

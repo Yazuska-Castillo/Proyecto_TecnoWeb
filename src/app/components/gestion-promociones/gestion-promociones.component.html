@@ -1,0 +1,43 @@
+<label>Nombre de la promoción</label>
+<input [(ngModel)]="nombre" />
+
+<div></div>
+
+<label>Tipo</label>
+<select [(ngModel)]="tipo">
+  <option value="porcentaje">Porcentaje (%)</option>
+  <option value="fijo">Fijo ($ CLP)</option>
+</select>
+
+<div></div>
+
+<label>Valor</label>
+<input type="number" [(ngModel)]="valor" />
+
+<div></div>
+
+<label>Vigencia desde</label>
+<input type="date" [(ngModel)]="desde" />
+
+<div></div>
+
+<label>Vigencia hasta</label>
+<input type="date" [(ngModel)]="hasta" />
+
+<div></div>
+<button (click)="agregarPromocion()">Agregar Promoción</button>
+
+<ul>
+  <li *ngFor="let p of promociones">
+    <ng-container *ngIf="p.tipo === 'porcentaje'; else fijo">
+      {{ p.nombre }} - {{ p.valor }}% - {{ p.desde | date:'dd/MM/yyyy' }} - {{ p.hasta | date:'dd/MM/yyyy' }}
+    </ng-container>
+    <ng-template #fijo>
+      {{ p.nombre }} -
+      {{ p.valor | currency:'CLP':'symbol-narrow':'1.0-0' }} -
+      {{ p.desde | date:'dd/MM/yyyy' }} - {{ p.hasta | date:'dd/MM/yyyy' }}
+    </ng-template>
+
+    <button style="margin-left:8px" (click)="eliminar(p.id)">Eliminar</button>
+  </li>
+</ul>
