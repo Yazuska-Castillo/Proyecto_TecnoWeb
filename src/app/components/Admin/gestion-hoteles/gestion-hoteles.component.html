@@ -1,0 +1,33 @@
+<div>
+  <label for="nombre">Nombre del hotel</label>
+  <input type="text" [(ngModel)]="nombre" title="nombre" />
+  <br />
+  <label for="ubicacion">Ubicación</label>
+  <input type="text" [(ngModel)]="ubicacion" title="ubicacion" />
+  <br />
+  <label for="categoria">Categoría (1 a 5 estrellas)</label>
+  <input
+    type="number"
+    [(ngModel)]="categoria"
+    title="categoria"
+    min="1"
+    max="5"
+  />
+  <br />
+  <label for="habitaciones">Cantidad de habitaciones</label>
+  <input
+    type="number"
+    [(ngModel)]="habitaciones"
+    title="habitaciones"
+    min="1"
+  />
+  <br />
+  <button (click)="agregarHotel()">Agregar Hotel</button>
+</div>
+
+<ul>
+  <li *ngFor="let hotel of hoteles">
+    {{ hotel.nombre }} - {{ hotel.ubicacion }} - {{ hotel.categoria }} -
+    {{ hotel.habitaciones }}
+  </li>
+</ul>
