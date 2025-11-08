@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms'; // ya correcto
+import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+
 import { CatalogoHabitacionesComponent } from './components/habitaciones/catalogo-habitaciones/catalogo-habitaciones.component';
 import { DetalleHabitacionComponent } from './components/habitaciones/detalle-habitacion/detalle-habitacion.component';
 import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-cliente.component';
 import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
-import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component'; // 👈 agrega esta línea
+import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component';
+import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,8 @@ import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gest
     DetalleHabitacionComponent,
     PanelClienteComponent,
     HistorialReservasComponent,
-    GestionHotelesComponent // xd
+    GestionHotelesComponent,
+    GestionPromocionesComponent
   ],
   imports: [
     BrowserModule,
@@ -25,6 +28,7 @@ import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gest
     FormsModule //  [(ngModel)]
   ],
   providers: [],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
+
