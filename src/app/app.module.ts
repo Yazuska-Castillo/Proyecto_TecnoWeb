@@ -8,8 +8,6 @@ import { AppComponent } from './app.component';
 import { registerLocaleData } from '@angular/common';
 import localeEsCl from '@angular/common/locales/es-CL';
 registerLocaleData(localeEsCl);
-
-
 import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
 
 @NgModule({
