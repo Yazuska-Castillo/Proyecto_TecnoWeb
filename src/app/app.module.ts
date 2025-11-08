@@ -1,28 +1,34 @@
-import { NgModule, LOCALE_ID } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { registerLocaleData } from '@angular/common';
-import localeEsCl from '@angular/common/locales/es-CL';
-registerLocaleData(localeEsCl);
+import { CatalogoHabitacionesComponent } from './components/habitaciones/catalogo-habitaciones/catalogo-habitaciones.component';
+import { DetalleHabitacionComponent } from './components/habitaciones/detalle-habitacion/detalle-habitacion.component';
+import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-cliente.component';
+import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
+import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component';
 import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    CatalogoHabitacionesComponent,
+    DetalleHabitacionComponent,
+    PanelClienteComponent,
+    HistorialReservasComponent,
+    GestionHotelesComponent,
     GestionPromocionesComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule //  [(ngModel)]
   ],
-  providers: [
-    { provide: LOCALE_ID, useValue: 'es-CL' }
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
+
