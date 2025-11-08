@@ -24,6 +24,6 @@ import { HistorialReservasComponent } from './components/cliente/historial-reser
     FormsModule  //investigar
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
