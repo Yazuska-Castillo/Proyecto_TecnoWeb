@@ -4,18 +4,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
-import { CarritoComponent } from './components/carrito/carrito.component';
+import { FormsModule } from '@angular/forms';
+import { RegistroComponent } from './components/registro/registro.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    CarritoComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
+  declarations: [AppComponent, LoginComponent, RegistroComponent],
+  imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -1,1 +1,35 @@
-<p>login works!</p>
+<div class="login-container">
+  <h2>Iniciar Sesión</h2>
+
+  <form (ngSubmit)="login()">
+
+    <div class="form-group">
+      <label for="usuario">Usuario</label>
+      <input 
+        type="text" 
+        id="usuario" 
+        name="usuario"
+        [(ngModel)]="datosLogin.usuario" 
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input 
+        type="password" 
+        id="password" 
+        name="password"
+        [(ngModel)]="datosLogin.contrasena" 
+        required
+      >
+    </div>
+
+    <button type="submit">Ingresar</button>
+
+  </form>
+  
+  <div class="registro-link">
+    <p>¿No tienes una cuenta? <a routerLink="/registro">Regístrate aquí</a></p>
+  </div>
+</div>
