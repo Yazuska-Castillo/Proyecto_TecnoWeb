@@ -1,0 +1,19 @@
+<p>historial-reservas works!</p>
+<!-- historial-reservas.component.html -->
+<h2>Historial de Reservas</h2>
+
+<div *ngIf="reservas.length === 0">
+  <p>No tienes reservas registradas.</p>
+</div>
+
+<div class="reserva" *ngFor="let r of reservas">
+  <h3>{{ r.habitacion }}</h3>
+  <p><b>Fechas:</b> {{ r.fechaInicio }} → {{ r.fechaFin }}</p>
+  <p><b>Precio:</b> ${{ r.precio }}</p>
+  <p><b>Estado:</b> {{ r.estado }}</p>
+
+  <div class="acciones">
+    <button (click)="modificar(r)">Modificar fecha</button>
+    <button (click)="cancelar(r)">Cancelar y solicitar reembolso</button>
+  </div>
+</div>
