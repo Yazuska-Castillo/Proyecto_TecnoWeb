@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,6 +11,7 @@ import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-
 import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
 import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component';
 import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -20,15 +21,11 @@ import { GestionPromocionesComponent } from './components/gestion-promociones/ge
     PanelClienteComponent,
     HistorialReservasComponent,
     GestionHotelesComponent,
-    GestionPromocionesComponent
+    GestionPromocionesComponent,
+    LoginComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule //  [(ngModel)]
-  ],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
-

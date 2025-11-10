@@ -5,7 +5,7 @@ import { HABITACIONES } from '../../../../data/habitaciones';
 @Component({
   selector: 'app-catalogo-habitaciones',
   templateUrl: './catalogo-habitaciones.component.html',
-  styleUrls: ['./catalogo-habitaciones.component.css']
+  styleUrls: ['./catalogo-habitaciones.component.css'],
 })
 export class CatalogoHabitacionesComponent {
   habitaciones = HABITACIONES;
@@ -19,7 +19,13 @@ export class CatalogoHabitacionesComponent {
   }
 
   ordenar(tipo: string) {
-    if (tipo === 'asc') this.habitacionesFiltradas.sort((a, b) => a.precioPorNoche - b.precioPorNoche);
-    else this.habitacionesFiltradas.sort((a, b) => b.precioPorNoche - a.precioPorNoche);
+    if (tipo === 'asc')
+      this.habitacionesFiltradas.sort(
+        (a, b) => a.precioPorNoche - b.precioPorNoche
+      );
+    else
+      this.habitacionesFiltradas.sort(
+        (a, b) => b.precioPorNoche - a.precioPorNoche
+      );
   }
 }
