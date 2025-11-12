@@ -33,3 +33,19 @@
     <p>¿No tienes una cuenta? <a routerLink="/registro">Regístrate aquí</a></p>
   </div>
 </div>
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card text-center shadow p-4" style="width: 22rem">
+    <h3 class="mb-3">Bienvenido</h3>
+    <p class="text-muted mb-4">Seleccione su tipo de usuario</p>
+
+    <div class="d-grid gap-3">
+      <button class="btn btn-primary btn-lg" (click)="irAdmin()">
+        <i class="bi bi-person-gear me-2"></i> Administrador
+      </button>
+
+      <button class="btn btn-success btn-lg" (click)="irCliente()">
+        <i class="bi bi-person-circle me-2"></i> Cliente
+      </button>
+    </div>
+  </div>
+</div>

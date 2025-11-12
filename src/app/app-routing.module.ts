@@ -1,34 +1,58 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
 import { RegistroComponent } from './components/registro/registro.component';
+// Componentes
+import { LoginComponent } from './components/login/login.component';
+import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
+import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component';
+import { CatalogoHabitacionesComponent } from './components/habitaciones/catalogo-habitaciones/catalogo-habitaciones.component';
+import { DetalleHabitacionComponent } from './components/habitaciones/detalle-habitacion/detalle-habitacion.component';
+import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-cliente.component';
+import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
 
 const routes: Routes = [
-  {
+  { path: '', component: LoginComponent, pathMatch: 'full' }, //Ahora login es el principal, falta la autenticación
+
+  // ---------------- CLIENTE ----------------
+  { path: 'catalogo', component: CatalogoHabitacionesComponent },
+  { path: 'habitacion/:id', component: DetalleHabitacionComponent },
+
+  {
+    path: 'cliente',
+    component: PanelClienteComponent,
+    children: [
+      { path: 'historial', component: HistorialReservasComponent },
+      { path: '', redirectTo: 'historial', pathMatch: 'full' },
+    ],
+  },
+  { path: 'cliente/datos', component: GestionPromocionesComponent },
+
+  // ---------------- ADMIN ----------------
+  { path: 'admin', component: GestionHotelesComponent },
+  { path: 'gestion-promociones', component: GestionPromocionesComponent },
+
+  // ---------------- ERRORES ----------------
+  { path: '**', redirectTo: '' },
+  //
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
   },
-  {
-    path: 'login',
-    component: LoginComponent,
-  },
+  { path: 'login', component: LoginComponent,},
   
   // --- MUEVE ESTA RUTA AQUÍ ---
   {
-    path: 'registro',
-    component: RegistroComponent,
-  },
+    path: 'registro', component: RegistroComponent,},
 
   // --- LA RUTA COMODÍN (**) SIEMPRE AL FINAL ---
-  {
-    path: '**',
-    redirectTo: 'login',
-  },
+  { path: '**',redirectTo: 'login'},
 ];
+
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
