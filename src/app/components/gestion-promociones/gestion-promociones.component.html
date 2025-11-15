@@ -1,31 +1,31 @@
 <h2>Gestión de Promociones</h2>
 
 <div>
-  <label>Nombre de la promoción:</label>
-  <input [(ngModel)]="nombre" />
+  <label for="nombrePromo">Nombre de la promoción:</label>
+  <input id="nombrePromo" [(ngModel)]="nombre" />
 </div>
 
 <div>
-  <label>Tipo:</label>
-  <select [(ngModel)]="tipo">
+  <label for="tipoPromo">Tipo:</label>
+  <select id="tipoPromo"[(ngModel)]="tipo">
     <option value="porcentaje">Porcentaje (%)</option>
     <option value="fijo">Fijo ($ CLP)</option>
   </select>
 </div>
 
 <div>
-  <label>Valor:</label>
-  <input type="number" [(ngModel)]="valor" />
+  <label for="ValorPromo">Valor:</label>
+  <input id = "ValorPromo" type="number" [(ngModel)]="valor" />
 </div>
 
 <div>
-  <label>Desde:</label>
-  <input type="date" [(ngModel)]="desde" />
+  <label for="DesdePromo">Desde:</label>
+  <input id ="DesdePromo" type="date" [(ngModel)]="desde" />
 </div>
 
 <div>
-  <label>Hasta:</label>
-  <input type="date" [(ngModel)]="hasta" />
+  <label for="HastaPromo">Hasta:</label>
+  <input id="HastaPromo"type="date" [(ngModel)]="hasta" />
 </div>
 
 <button (click)="agregar()">Agregar Promoción</button>
