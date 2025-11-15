@@ -12,6 +12,7 @@ import { HistorialReservasComponent } from './components/cliente/historial-reser
 import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component';
 import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
 import { LoginComponent } from './components/login/login.component';
+import { RegistroComponent } from './components/registro/registro.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { LoginComponent } from './components/login/login.component';
     GestionHotelesComponent,
     GestionPromocionesComponent,
     LoginComponent,
+    RegistroComponent
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule],
   providers: [],
