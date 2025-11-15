@@ -1,33 +1,220 @@
-<div>
-  <label for="nombre">Nombre del hotel</label>
-  <input type="text" [(ngModel)]="nombre" title="nombre" />
-  <br />
-  <label for="ubicacion">Ubicación</label>
-  <input type="text" [(ngModel)]="ubicacion" title="ubicacion" />
-  <br />
-  <label for="categoria">Categoría (1 a 5 estrellas)</label>
-  <input
-    type="number"
-    [(ngModel)]="categoria"
-    title="categoria"
-    min="1"
-    max="5"
-  />
-  <br />
-  <label for="habitaciones">Cantidad de habitaciones</label>
-  <input
-    type="number"
-    [(ngModel)]="habitaciones"
-    title="habitaciones"
-    min="1"
-  />
-  <br />
-  <button (click)="agregarHotel()">Agregar Hotel</button>
-</div>
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Gestión de Hoteles</h2>
 
-<ul>
-  <li *ngFor="let hotel of hoteles">
-    {{ hotel.nombre }} - {{ hotel.ubicacion }} - {{ hotel.categoria }} -
-    {{ hotel.habitaciones }}
-  </li>
-</ul>
+  <!-- Botón para abrir modal -->
+  <div class="d-flex justify-content-end mb-3">
+    <button
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#hotelModal"
+      (click)="abrirModalAgregar()"
+    >
+      <i class="bi bi-plus-circle me-1"></i> Añadir hotel
+    </button>
+  </div>
+
+  <!-- Tabla de hoteles -->
+  <div class="table-responsive shadow-sm">
+    <table class="table table-hover table-bordered align-middle">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Ubicación</th>
+          <th>Categoría</th>
+          <th>Habitaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let h of hoteles">
+          <td class="text-center">{{ h.id }}</td>
+          <td>{{ h.nombre }}</td>
+          <td>{{ h.ubicacion }}</td>
+          <td class="text-center">{{ h.categoria }} ★</td>
+          <td class="text-center">{{ h.habitaciones }}</td>
+          <td class="text-center">
+            <button
+              class="btn btn-warning btn-sm me-2"
+              (click)="abrirModalEditar(h)"
+              data-bs-toggle="modal"
+              data-bs-target="#hotelModal"
+            >
+              <i class="bi bi-pencil-square"></i> Editar
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarHotel(h.id)">
+              <i class="bi bi-trash"></i> Eliminar
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="hoteles.length === 0">
+          <td colspan="6" class="text-center text-muted">
+            No hay hoteles registrados.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para agregar/editar hotel -->
+  <div
+    class="modal fade"
+    id="hotelModal"
+    tabindex="-1"
+    aria-labelledby="hotelModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form [formGroup]="formHotel" (ngSubmit)="guardarHotel()">
+          <div class="modal-header">
+            <h5 class="modal-title" id="hotelModalLabel">
+              {{ editando ? "Editar Hotel" : "Añadir Hotel" }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              (click)="cancelarEdicion()"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Nombre -->
+            <div class="mb-3">
+              <label class="form-label">Nombre del hotel</label>
+              <input
+                type="text"
+                formControlName="nombre"
+                class="form-control"
+                placeholder="Ej: Hilton Arica"
+              />
+              <small
+                *ngIf="
+                  formHotel.get('nombre')?.hasError('required') &&
+                  formHotel.get('nombre')?.touched
+                "
+                class="text-danger"
+                >El nombre es obligatorio.</small
+              >
+              <small
+                *ngIf="
+                  formHotel.get('nombre')?.hasError('minlength') &&
+                  formHotel.get('nombre')?.touched
+                "
+                class="text-danger"
+                >Debe tener al menos 3 caracteres.</small
+              >
+              <small
+                *ngIf="
+                  formHotel.get('nombre')?.hasError('pattern') &&
+                  formHotel.get('nombre')?.touched
+                "
+                class="text-danger"
+                >Solo se permiten letras, números y espacios.</small
+              >
+            </div>
+
+            <!-- Ubicación -->
+            <div class="mb-3">
+              <label class="form-label">Ubicación</label>
+              <input
+                type="text"
+                formControlName="ubicacion"
+                class="form-control"
+                placeholder="Ej: Arica Norte"
+              />
+              <small
+                *ngIf="
+                  formHotel.get('ubicacion')?.hasError('required') &&
+                  formHotel.get('ubicacion')?.touched
+                "
+                class="text-danger"
+                >La ubicación es obligatoria.</small
+              >
+              <small
+                *ngIf="
+                  formHotel.get('ubicacion')?.hasError('pattern') &&
+                  formHotel.get('ubicacion')?.touched
+                "
+                class="text-danger"
+                >Solo se permiten letras, números y espacios.</small
+              >
+            </div>
+
+            <!-- Categoría -->
+            <div class="mb-3">
+              <label class="form-label">Categoría (1-5)</label>
+              <input
+                type="number"
+                formControlName="categoria"
+                class="form-control"
+                min="1"
+                max="5"
+              />
+              <small
+                *ngIf="
+                  formHotel.get('categoria')?.hasError('min') &&
+                  formHotel.get('categoria')?.touched
+                "
+                class="text-danger"
+                >La categoría no puede ser menor que 1.</small
+              >
+              <small
+                *ngIf="
+                  formHotel.get('categoria')?.hasError('max') &&
+                  formHotel.get('categoria')?.touched
+                "
+                class="text-danger"
+                >La categoría no puede ser mayor que 5.</small
+              >
+            </div>
+
+            <!-- Habitaciones -->
+            <div class="mb-3">
+              <label class="form-label">Habitaciones</label>
+              <input
+                type="number"
+                formControlName="habitaciones"
+                class="form-control"
+                min="1"
+              />
+              <small
+                *ngIf="
+                  formHotel.get('habitaciones')?.hasError('min') &&
+                  formHotel.get('habitaciones')?.touched
+                "
+                class="text-danger"
+                >Debe ingresar un número válido de habitaciones.</small
+              >
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <span *ngIf="formHotel.invalid" class="text-danger me-auto small">
+              ⚠️ Complete los campos correctamente antes de continuar.
+            </span>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              (click)="cancelarEdicion()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="formHotel.invalid"
+              data-bs-dismiss="modal"
+            >
+              {{ editando ? "Guardar Cambios" : "Agregar Hotel" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
