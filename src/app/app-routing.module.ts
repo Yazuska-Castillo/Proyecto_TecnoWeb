@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { RegistroComponent } from './components/registro/registro.component';
 
 // Componentes
+import { RegistroComponent } from './components/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
 import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
 import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component';
@@ -11,38 +11,63 @@ import { DetalleHabitacionComponent } from './components/habitaciones/detalle-ha
 import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-cliente.component';
 import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
 
+// Guards
+import { protectGuard } from './guards/guard.guard';
+import { adminGuard } from './guards/admin.guard';
+import { redireccionarComponent } from './components/redireccionar/redireccionar.component';
+
 const routes: Routes = [
-  // 1. Rutas principales
+  // Publicas
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
 
-  // 2. Ruta por defecto (si la URL está vacía, redirige a /login)
-  { path: '', redirectTo: 'login', pathMatch: 'full' }, 
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   // ---------------- CLIENTE ----------------
-  { path: 'catalogo', component: CatalogoHabitacionesComponent },
-  { path: 'habitacion/:id', component: DetalleHabitacionComponent },
+  {
+    path: 'catalogo',
+    component: CatalogoHabitacionesComponent,
+    canActivate: [protectGuard],
+  },
+
+  {
+    path: 'habitacion/:id',
+    component: DetalleHabitacionComponent,
+    canActivate: [protectGuard],
+  },
+
   {
     path: 'cliente',
     component: PanelClienteComponent,
+    canActivate: [protectGuard],
     children: [
       { path: 'historial', component: HistorialReservasComponent },
       { path: '', redirectTo: 'historial', pathMatch: 'full' },
     ],
   },
-  { path: 'cliente/datos', component: GestionPromocionesComponent }, // Esta ruta estaba duplicada, la dejé aquí
+
+  {
+    path: 'cliente/datos',
+    component: GestionPromocionesComponent,
+    canActivate: [protectGuard],
+  },
 
   // ---------------- ADMIN ----------------
-  { path: 'admin', component: GestionHotelesComponent },
-  { path: 'gestion-promociones', component: GestionPromocionesComponent },
+  {
+    path: 'admin',
+    component: GestionHotelesComponent,
+    canActivate: [protectGuard, adminGuard],
+  },
 
-  // ---------------- ERRORES ----------------
-  // 3. La ruta comodín (**) SIEMPRE AL FINAL.
-  // Si no coincide nada de lo anterior, redirige a /login.
-  { path: '**', redirectTo: 'login' },
+  {
+    path: 'gestion-promociones',
+    component: GestionPromocionesComponent,
+    canActivate: [protectGuard, adminGuard],
+  },
+
+  // Ruta no encontrada
+  { path: '**', component: redireccionarComponent },
 ];
-
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -13,6 +13,7 @@ import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gest
 import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegistroComponent } from './components/registro/registro.component';
+import { redireccionarComponent } from './components/redireccionar/redireccionar.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { RegistroComponent } from './components/registro/registro.component';
     GestionHotelesComponent,
     GestionPromocionesComponent,
     LoginComponent,
-    RegistroComponent
+    RegistroComponent,
+    redireccionarComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule],
   providers: [],

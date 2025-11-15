@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Login } from '../../models/login';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -7,30 +9,36 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-
+  // Datos formulario
   datosLogin = {
     usuario: '',
-    contrasena: ''
+    contrasena: '',
   };
-  
-  // Variable para la casilla
-  esAdmin: boolean = false; 
 
-  constructor(private router: Router) {}
-  
+  constructor(private router: Router, private authService: AuthService) {}
+
   login() {
-    
-    console.log('Botón "Ingresar" presionado.');
-    console.log('Valor final de esAdmin:', this.esAdmin);
+    const loginUser = new Login(
+      this.datosLogin.usuario,
+      this.datosLogin.contrasena
+    );
 
-    if (this.esAdmin) {
-      // Si es TRUE
-      console.log('Redirigiendo a /admin');
-      this.router.navigate(['/admin']);
-    } else {
-      // Si es FALSE
-      console.log('Redirigiendo a /catalogo (cliente)');
-      this.router.navigate(['/catalogo']);
-    }
+    // Intentar login
+    this.authService.login(loginUser).subscribe((ok) => {
+      if (!ok) {
+        alert('Credenciales incorrectas.');
+        return;
+      }
+
+      // Obtener rol
+      const rol = this.authService.getRol();
+
+      // Redirigir según rol
+      if (rol === 'admin') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/catalogo']);
+      }
+    });
   }
 }
