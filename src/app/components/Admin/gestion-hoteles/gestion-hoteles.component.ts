@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HotelesService } from 'src/app/services/hoteles.service';
 import { Hotel } from 'src/app/models/hotel';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-gestion-hoteles',
@@ -15,7 +16,8 @@ export class GestionHotelesComponent implements OnInit {
   hotelSeleccionado: Hotel | null = null;
   mensaje: string = '';
 
-  constructor(private fb: FormBuilder, private hotelService: HotelesService) {}
+  constructor(
+    private fb: FormBuilder, private hotelService: HotelesService, private router: Router) {} // ← Inyectar Router
 
   ngOnInit(): void {
     this.formHotel = this.fb.group({
@@ -102,5 +104,11 @@ export class GestionHotelesComponent implements OnInit {
     this.editando = true;
     this.hotelSeleccionado = hotel;
     this.formHotel.patchValue(hotel);
+  }
+
+  verHabitacionesHotel(hotelId: number): void {
+    this.router.navigate(['/admin/habitaciones'], { 
+      queryParams: { hotelId: hotelId } 
+    });
   }
 }

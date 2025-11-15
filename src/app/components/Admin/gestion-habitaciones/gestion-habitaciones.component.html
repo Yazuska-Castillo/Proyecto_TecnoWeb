@@ -1,0 +1,216 @@
+<!-- gestion-habitaciones.component.html -->
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="mb-0">Gestión de Habitaciones</h2>
+      <small *ngIf="hotelActual" class="text-muted">
+        Hotel: <strong>{{ hotelActual.nombre }}</strong> | 
+        <span [class]="habilitarAgregar ? 'text-success' : 'text-danger'">
+          {{ mensajeHabitacionesRestantes }}
+        </span>
+      </small>
+      <small *ngIf="!hotelActual" class="text-muted">
+        Todos los hoteles - Sin límite
+      </small>
+    </div>
+    
+    <button class="btn btn-primary" 
+            (click)="abrirModalAgregar()"
+            [disabled]="!habilitarAgregar">
+      + Añadir Habitación
+    </button>
+  </div>
+
+  <!-- Alerta de límite -->
+  <div *ngIf="!habilitarAgregar && hotelActual" class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i>
+    Límite de {{ limiteHabitaciones }} habitaciones alcanzado para {{ hotelActual.nombre }}.
+  </div>
+
+  <!-- Modal para AGREGAR habitación -->
+  <ng-template #modalAgregar let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Nueva Habitación</h5>
+      <button type="button" class="btn-close" (click)="cancelar()"></button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="!habilitarAgregar && hotelActual" class="alert alert-danger mb-3">
+        Límite de {{ limiteHabitaciones }} habitaciones alcanzado.
+      </div>
+
+      <form #roomForm="ngForm">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Número</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaHabitacion.number" 
+                   name="number" required placeholder="101, 202...">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Tipo</label>
+            <select class="form-select" [(ngModel)]="nuevaHabitacion.type" name="type" required>
+              <option value="">Seleccionar tipo</option>
+              <option value="Standard">Standard</option>
+              <option value="Deluxe">Deluxe</option>
+              <option value="Suite">Suite</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Hotel</label>
+            <div class="form-control bg-light">
+              <strong>{{ hotelActual?.nombre || 'Hotel no seleccionado' }}</strong>
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Precio/Noche ($)</label>
+            <input type="number" class="form-control" [(ngModel)]="nuevaHabitacion.pricePerNight" 
+                   name="price" required min="1" placeholder="120">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Capacidad</label>
+            <select class="form-select" [(ngModel)]="nuevaHabitacion.capacity" name="capacity" required>
+              <option value="">Seleccionar</option>
+              <option value="1">1 persona</option>
+              <option value="2">2 personas</option>
+              <option value="3">3 personas</option>
+              <option value="4">4 personas</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Estado</label>
+            <select class="form-select" [(ngModel)]="nuevaHabitacion.status" name="status" required>
+              <option value="Disponible">Disponible</option>
+              <option value="Ocupada">Ocupada</option>
+              <option value="Mantenimiento">Mantenimiento</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+      <button type="button" class="btn btn-success" 
+              (click)="agregarHabitacion()"
+              [disabled]="!roomForm.valid || !habilitarAgregar">
+        Guardar
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Modal para EDITAR habitación -->
+  <ng-template #modalEditar let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Editar Habitación</h5>
+      <button type="button" class="btn-close" (click)="cancelar()"></button>
+    </div>
+    <div class="modal-body">
+      <form #editForm="ngForm">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Número</label>
+            <input type="text" class="form-control" [(ngModel)]="habitacionEditando.number" 
+                   name="editNumber" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Tipo</label>
+            <select class="form-select" [(ngModel)]="habitacionEditando.type" name="editType" required>
+              <option value="Standard">Standard</option>
+              <option value="Deluxe">Deluxe</option>
+              <option value="Suite">Suite</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Hotel</label>
+            <div class="form-control bg-light">
+              <strong>{{ habitacionEditando.hotel }}</strong>
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Precio/Noche ($)</label>
+            <input type="number" class="form-control" [(ngModel)]="habitacionEditando.pricePerNight" 
+                   name="editPrice" required min="1">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Capacidad</label>
+            <select class="form-select" [(ngModel)]="habitacionEditando.capacity" name="editCapacity" required>
+              <option value="1">1 persona</option>
+              <option value="2">2 personas</option>
+              <option value="3">3 personas</option>
+              <option value="4">4 personas</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Estado</label>
+            <select class="form-select" [(ngModel)]="habitacionEditando.status" name="editStatus" required>
+              <option value="Disponible">Disponible</option>
+              <option value="Ocupada">Ocupada</option>
+              <option value="Mantenimiento">Mantenimiento</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+      <button type="button" class="btn btn-success" 
+              (click)="actualizarHabitacion()"
+              [disabled]="!editForm.valid">
+        Guardar Cambios
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Tabla de habitaciones -->
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Tipo</th>
+          <th>Precio/Noche</th>
+          <th>Capacidad</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let room of rooms">
+          <td>{{ room.number }}</td>
+          <td>{{ room.type }}</td>
+          <td>${{ room.pricePerNight }}</td>
+          <td>{{ room.capacity }} persona(s)</td>
+          <td>
+            <span [class]="getStatusClass(room.status)">{{ room.status }}</span>
+          </td>
+          <td>
+            <button class="btn btn-warning btn-sm me-1" (click)="abrirModalEditar(room)">
+              Editar
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarHabitacion(room.id)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="rooms.length === 0">
+          <td colspan="6" class="text-center text-muted py-4">
+            No hay habitaciones registradas
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

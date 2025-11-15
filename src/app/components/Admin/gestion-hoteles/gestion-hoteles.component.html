@@ -29,7 +29,11 @@
       <tbody>
         <tr *ngFor="let h of hoteles">
           <td class="text-center">{{ h.id }}</td>
-          <td>{{ h.nombre }}</td>
+          <td> 
+            <button class="btn btn-link p-0 text-decoration-none" (click)="verHabitacionesHotel(h.id)"> 
+              {{ h.nombre }}
+            </button>
+          </td>
           <td>{{ h.ubicacion }}</td>
           <td class="text-center">{{ h.categoria }} ★</td>
           <td class="text-center">{{ h.habitaciones }}</td>
