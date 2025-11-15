@@ -7,13 +7,30 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+
+  datosLogin = {
+    usuario: '',
+    contrasena: ''
+  };
+  
+  // Variable para la casilla
+  esAdmin: boolean = false; 
+
   constructor(private router: Router) {}
+  
+  login() {
+    
+    console.log('Botón "Ingresar" presionado.');
+    console.log('Valor final de esAdmin:', this.esAdmin);
 
-  irAdmin() {
-    this.router.navigate(['/admin']);
-  }
-
-  irCliente() {
-    this.router.navigate(['/catalogo']);
+    if (this.esAdmin) {
+      // Si es TRUE
+      console.log('Redirigiendo a /admin');
+      this.router.navigate(['/admin']);
+    } else {
+      // Si es FALSE
+      console.log('Redirigiendo a /catalogo (cliente)');
+      this.router.navigate(['/catalogo']);
+    }
   }
 }
