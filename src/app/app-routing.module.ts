@@ -9,6 +9,7 @@ import { CatalogoHabitacionesComponent } from './components/habitaciones/catalog
 import { DetalleHabitacionComponent } from './components/habitaciones/detalle-habitacion/detalle-habitacion.component';
 import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-cliente.component';
 import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
+import { GestionHabitacionesComponent } from './components/Admin/gestion-habitaciones/gestion-habitaciones.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent, pathMatch: 'full' }, //Ahora login es el principal, falta la autenticación
@@ -30,6 +31,7 @@ const routes: Routes = [
   // ---------------- ADMIN ----------------
   { path: 'admin', component: GestionHotelesComponent },
   { path: 'gestion-promociones', component: GestionPromocionesComponent },
+  { path: 'admin/habitaciones', component: GestionHabitacionesComponent },
 
   // ---------------- ERRORES ----------------
   { path: '**', redirectTo: '' },
