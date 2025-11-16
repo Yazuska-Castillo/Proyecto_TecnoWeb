@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
+import { GestionPromocionesComponent } from './components/Admin/gestion-promociones/gestion-promociones.component';
 import { UsuariosService } from './services/usuarios.service';
 
 @Component({

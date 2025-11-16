@@ -1,8 +1,34 @@
-<nav class="navbar">
-  <a routerLink="/">Inicio</a>
-  <a routerLink="/cliente/historial">Mis reservas</a>
-</nav>
+<div class="d-flex flex-column min-vh-100">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
+    <a class="navbar-brand fw-bold" routerLink="/">Hilton Hotels</a>
 
-<router-outlet></router-outlet>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarContent"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-<footer>© 2025 Hilton Hotels & Resort — Todos los derechos reservados</footer>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" routerLink="/">Inicio</a></li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/cliente/historial">Mis reservas</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <main class="container flex-grow-1 mt-4 mb-5">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-dark text-white text-center py-3">
+    © 2025 Hilton Hotels & Resort — Todos los derechos reservados
+  </footer>
+</div>
