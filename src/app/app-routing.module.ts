@@ -11,7 +11,9 @@ import { DetalleHabitacionComponent } from './components/habitaciones/detalle-ha
 import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-cliente.component';
 import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
 import { GestionHabitacionesComponent } from './components/Admin/gestion-habitaciones/gestion-habitaciones.component';
-
+import { CatalogoHotelesComponent } from './components/cliente/catalogo-hoteles/catalogo-hoteles.component';
+import { HabitacionesHotelComponent } from './components/cliente/habitaciones-hotel/habitaciones-hotel.component';
+import { ReservaClienteComponent } from './components/cliente/reserva-cliente/reserva-cliente.component';
 // Guards
 import { protectGuard } from './guards/guard.guard';
 import { adminGuard } from './guards/admin.guard';
@@ -25,7 +27,7 @@ const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   // ---------------- CLIENTE ----------------
-  {
+  /*{
     path: 'catalogo',
     component: CatalogoHabitacionesComponent,
     canActivate: [protectGuard],
@@ -35,7 +37,7 @@ const routes: Routes = [
     path: 'habitacion/:id',
     component: DetalleHabitacionComponent,
     canActivate: [protectGuard],
-  },
+  },*/
 
   {
     path: 'cliente',
@@ -52,6 +54,23 @@ const routes: Routes = [
     component: GestionPromocionesComponent,
     canActivate: [protectGuard],
   },
+
+  {
+  path: 'cliente/hoteles',
+  component: CatalogoHotelesComponent,
+  canActivate: [protectGuard],
+},
+{
+  path: 'cliente/habitaciones',
+  component: HabitacionesHotelComponent,
+  canActivate: [protectGuard],
+},
+{
+  path: 'cliente/reserva',
+  component: ReservaClienteComponent,
+  canActivate: [protectGuard],
+},
+
 
   // ---------------- ADMIN ----------------
   {

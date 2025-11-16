@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Room } from '../models/room.model';
 
+// 👇 Importar habitaciones predefinidas
+import { HABITACIONES } from 'src/data/habitaciones';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,67 +14,121 @@ export class RoomsService {
   private roomsSubject: BehaviorSubject<Room[]>;
   
   constructor() {
-    // INICIALIZAR UNA SOLA VEZ
     const datosIniciales = this.cargarDesdeLocalStorage();
     this.roomsSubject = new BehaviorSubject<Room[]>(datosIniciales);
   }
 
+  // ============================================================
+  //   1. CARGAR HABITACIONES (PREDEFINIDAS + LOCALES)
+  // ============================================================
   private cargarDesdeLocalStorage(): Room[] {
+    let locales: Room[] = [];
+
+    // 1️⃣ Cargar habitaciones guardadas localmente
     try {
-      const datosGuardados = localStorage.getItem(this.storageKey);
-      if (datosGuardados) {
-        return JSON.parse(datosGuardados);
+      const guardadas = localStorage.getItem(this.storageKey);
+      if (guardadas) {
+        locales = JSON.parse(guardadas);
       }
     } catch (error) {
-      console.error('Error al cargar datos de localStorage:', error);
+      console.error("Error al cargar habitaciones locales:", error);
     }
-    
-    // Datos iniciales mínimos
-    return [];
+
+    // 2️⃣ Convertir HABITACIONES predefinidas al formato Room
+    const predefinidas: Room[] = HABITACIONES.map((h, index) => ({
+      id: h.id,
+      number: String(100 + index),      
+      type: h.nombre,
+      hotel: h.hotel,
+      pricePerNight: h.precioPorNoche,
+      capacity: 2,
+      status: 'Disponible'
+    }));
+
+    // 3️⃣ Combinar sin duplicar
+    const combinadas = [...predefinidas];
+
+    for (const hab of locales) {
+      const yaExiste = predefinidas.some(p => p.id === hab.id);
+      if (!yaExiste) {
+        combinadas.push(hab);
+      }
+    }
+
+    return combinadas;
   }
 
+  // ============================================================
+  //   2. GUARDAR HABITACIONES (SOLO LAS CREADAS POR EL USUARIO)
+  // ============================================================
   private guardarEnLocalStorage(rooms: Room[]): void {
     try {
-      localStorage.setItem(this.storageKey, JSON.stringify(rooms));
+      // ❗ NO guardar habitaciones predefinidas
+      const soloLocales = rooms.filter(room =>
+        !HABITACIONES.some(p => p.id === room.id)
+      );
+
+      localStorage.setItem(this.storageKey, JSON.stringify(soloLocales));
     } catch (error) {
       console.error('Error al guardar en localStorage:', error);
     }
   }
 
-  // ✅ SOLO UN Observable - no crear nuevos cada vez
+  // ============================================================
+  //   3. OBTENER HABITACIONES
+  // ============================================================
   getRooms(): Observable<Room[]> {
     return this.roomsSubject.asObservable();
   }
 
+  // ============================================================
+  //   4. AGREGAR NUEVA HABITACIÓN (LOCAL)
+  // ============================================================
   addRoom(room: Room): void {
-    console.log('=== ADD ROOM CALLED ===');
-    console.log('Room to add:', room);
-    
-    const currentRooms = this.roomsSubject.value;
-    console.log('Current rooms before:', currentRooms.length);
-    
-    const newRooms = [...currentRooms, room];
-    console.log('New rooms after:', newRooms.length);
-    
-    this.roomsSubject.next(newRooms);
-    this.guardarEnLocalStorage(newRooms);
-    
-    console.log('=== ADD ROOM COMPLETED ===');
+    const actual = this.roomsSubject.value;
+
+    // Generar ID correcto (evitar conflicto con predefinidas)
+    const maxId = actual.length > 0 ? Math.max(...actual.map(r => r.id)) : 0;
+    room.id = maxId + 1;
+
+    const nuevas = [...actual, room];
+    this.roomsSubject.next(nuevas);
+    this.guardarEnLocalStorage(nuevas);
   }
 
+  // ============================================================
+  //   5. EDITAR HABITACIÓN (SI ES LOCAL)
+  // ============================================================
   updateRoom(id: number, updatedRoom: Room): void {
-    const currentRooms = this.roomsSubject.value;
-    const updatedRooms = currentRooms.map(room => 
+    // ❗ No permitir editar predefinidas
+    if (HABITACIONES.some(h => h.id === id)) {
+      alert("Esta habitación es del sistema y no puede editarse.");
+      return;
+    }
+
+    const actual = this.roomsSubject.value;
+    const nuevas = actual.map(room => 
       room.id === id ? updatedRoom : room
     );
-    this.roomsSubject.next(updatedRooms);
-    this.guardarEnLocalStorage(updatedRooms);
+
+    this.roomsSubject.next(nuevas);
+    this.guardarEnLocalStorage(nuevas);
   }
 
+  // ============================================================
+  //   6. ELIMINAR HABITACIÓN (SOLO LOCALES)
+  // ============================================================
   deleteRoom(id: number): void {
-    const currentRooms = this.roomsSubject.value;
-    const updatedRooms = currentRooms.filter(room => room.id !== id);
-    this.roomsSubject.next(updatedRooms);
-    this.guardarEnLocalStorage(updatedRooms);
+    // ❗ Bloquear eliminación de predefinidas
+    if (HABITACIONES.some(h => h.id === id)) {
+      alert("Esta habitación es parte del sistema y no puede eliminarse.");
+      return;
+    }
+
+    const actual = this.roomsSubject.value;
+    const nuevas = actual.filter(room => room.id !== id);
+
+    this.roomsSubject.next(nuevas);
+    this.guardarEnLocalStorage(nuevas);
   }
 }

@@ -13,7 +13,7 @@ export class redireccionarComponent {
     if (rol === 'admin') {
       this.router.navigate(['/admin']);
     } else if (rol === 'cliente') {
-      this.router.navigate(['/catalogo']);
+      this.router.navigate(['/cliente/hoteles']);
     } else {
       this.router.navigate(['/login']);
     }

@@ -16,6 +16,9 @@ import { GestionHabitacionesComponent } from './components/Admin/gestion-habitac
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RegistroComponent } from './components/registro/registro.component';
 import { redireccionarComponent } from './components/redireccionar/redireccionar.component';
+import { CatalogoHotelesComponent } from './components/cliente/catalogo-hoteles/catalogo-hoteles.component';
+import { HabitacionesHotelComponent } from './components/cliente/habitaciones-hotel/habitaciones-hotel.component';
+import { ReservaClienteComponent } from './components/cliente/reserva-cliente/reserva-cliente.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +33,9 @@ import { redireccionarComponent } from './components/redireccionar/redireccionar
     RegistroComponent,
     redireccionarComponent,
     GestionHabitacionesComponent,
+    CatalogoHotelesComponent,
+    HabitacionesHotelComponent,
+    ReservaClienteComponent,
    
 
   ],
