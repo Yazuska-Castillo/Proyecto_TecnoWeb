@@ -14,8 +14,10 @@ export class AuthService {
   constructor() {}
 
   // Login admin o usuario registrado
+
   login(usuario: Login): Observable<boolean> {
-    // Admin
+
+    // ADMIN
     if (
       usuario.user === this.adminCreds.user &&
       usuario.password === this.adminCreds.password
@@ -25,10 +27,21 @@ export class AuthService {
       ).toString('base64');
 
       sessionStorage.setItem(this.tokenKey, token);
+
+      // 🔥 Guardar usuario actual
+      localStorage.setItem(
+        'usuarioActual',
+        JSON.stringify({
+          nombre: 'Administrador',
+          email: 'admin@hotel.com',
+          rol: 'admin',
+        })
+      );
+
       return of(true);
     }
 
-    // Usuarios registrados
+    // CLIENTES REGISTRADOS
     const data = localStorage.getItem('usuarios');
     const usuarios: Usuario[] = data ? JSON.parse(data) : [];
 
@@ -42,6 +55,10 @@ export class AuthService {
       ).toString('base64');
 
       sessionStorage.setItem(this.tokenKey, token);
+
+      // 🔥 Guardar usuario actual
+      localStorage.setItem('usuarioActual', JSON.stringify(encontrado));
+
       return of(true);
     }
 
@@ -66,4 +83,10 @@ export class AuthService {
   logout() {
     sessionStorage.removeItem(this.tokenKey);
   }
+
+  getUsuarioActual() {
+  const data = localStorage.getItem('usuarioActual');
+  return data ? JSON.parse(data) : null;
+}
+
 }

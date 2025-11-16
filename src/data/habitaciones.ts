@@ -6,6 +6,7 @@ export const HABITACIONES = [
     precioPorNoche: 35000,
     servicios: ['Desayuno', 'Wifi'],
     imagen: 'assets/img/simple.jpg',
+    hotel: 'Hilton Arica'   // 👈 CONECTADA AL HOTEL 1
   },
   {
     id: 2,
@@ -14,6 +15,7 @@ export const HABITACIONES = [
     precioPorNoche: 55000,
     servicios: ['Desayuno', 'Wifi', 'Piscina'],
     imagen: 'assets/img/familiar.jpg',
+    hotel: 'Hilton Arica'   // 👈 MISMO HOTEL (ejemplo)
   },
   {
     id: 3,
@@ -22,5 +24,6 @@ export const HABITACIONES = [
     precioPorNoche: 95000,
     servicios: ['Desayuno', 'Wifi', 'Jacuzzi', 'Servicio a la habitación'],
     imagen: 'assets/img/suite.jpg',
+    hotel: 'Costa Pacífico' // 👈 CONECTADA AL HOTEL 2
   },
 ];
