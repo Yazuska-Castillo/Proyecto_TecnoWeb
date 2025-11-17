@@ -1,0 +1,27 @@
+<div class="container-fluid px-0">
+  <div class="mapa-container">
+    <iframe *ngIf="mapaUrl" [src]="mapaUrl" width="100%" height="400" style="border:0;" allowfullscreen loading="lazy"></iframe>
+  </div>
+
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">Hoteles Disponibles</h2>
+    
+    <div class="row g-4">
+      <div class="col-md-4" *ngFor="let hotel of hoteles">
+        <div class="card h-100 shadow-sm" [class.border-primary]="hotelSeleccionado?.id === hotel.id" (click)="seleccionarHotel(hotel)" style="cursor: pointer;">
+          <div class="card-body">
+            <h5 class="card-title">{{ hotel.nombre }}</h5>
+            <p class="card-text text-muted mb-2">{{ hotel.ubicacion }}</p>
+            
+            <div class="mb-3">
+              <span class="text-warning" *ngFor="let star of getStarsArray(hotel.categoria)">⭐</span>
+              <span class="ms-2">{{ hotel.categoria }}</span>
+            </div>
+            
+            <button class="btn btn-primary w-100" (click)="$event.stopPropagation()">Ver habitaciones</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

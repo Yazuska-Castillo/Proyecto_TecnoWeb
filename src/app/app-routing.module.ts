@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-// Componentes
+
 import { RegistroComponent } from './components/cliente/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
 import { GestionPromocionesComponent } from './components/Admin/gestion-promociones/gestion-promociones.component';
@@ -13,8 +13,9 @@ import { CatalogoHotelesComponent } from './components/cliente/catalogo-hoteles/
 import { HabitacionesHotelComponent } from './components/cliente/habitaciones-hotel/habitaciones-hotel.component';
 import { ReservaClienteComponent } from './components/cliente/reserva-cliente/reserva-cliente.component';
 import { PantallaPrincipalComponent } from './components/pantalla-principal/pantalla-principal.component';
+import { MapaHotelComponent } from './components/mapa-hotel/mapa-hotel.component';
 
-// Guards
+
 import { protectGuard } from './guards/guard.guard';
 import { adminGuard } from './guards/admin.guard';
 import { redireccionarComponent } from './components/redireccionar/redireccionar.component';
@@ -22,11 +23,11 @@ import { redireccionarComponent } from './components/redireccionar/redireccionar
 const routes: Routes = [
   { path: '', component: PantallaPrincipalComponent },
 
-  // Publicas
+
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
 
-  // ---------------- CLIENTE ----------------
+
   {
     path: 'cliente',
     component: PanelClienteComponent,
@@ -37,11 +38,7 @@ const routes: Routes = [
     ],
   },
 
-  /*{
-    path: 'cliente/datos',
-    component: GestionPromocionesComponent,
-    canActivate: [protectGuard],
-  },*/
+
 
   {
     path: 'cliente/hoteles',
@@ -59,7 +56,13 @@ const routes: Routes = [
     canActivate: [protectGuard],
   },
 
-  // ---------------- ADMIN ----------------
+
+  {
+    path: 'cliente/hoteles-mapa',
+    component: MapaHotelComponent,
+  },
+
+
   {
     path: 'admin',
     component: GestionHotelesComponent,
@@ -78,7 +81,7 @@ const routes: Routes = [
     canActivate: [protectGuard, adminGuard],
   },
 
-  // Ruta no encontrada
+
   { path: '**', component: redireccionarComponent },
 ];
 

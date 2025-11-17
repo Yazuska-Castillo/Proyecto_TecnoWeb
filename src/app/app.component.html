@@ -14,10 +14,12 @@
 
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav ms-auto">
-        <!-- Usuario NO logueado -->
         <ng-container *ngIf="!auth.estaLogueado()">
           <li class="nav-item">
             <a class="nav-link" routerLink="/">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/cliente/hoteles-mapa">Ver hoteles</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" routerLink="/login">Iniciar sesión</a>
@@ -27,13 +29,15 @@
           </li>
         </ng-container>
 
-        <!-- Cliente logueado -->
         <ng-container *ngIf="auth.esCliente()">
           <li class="nav-item">
             <a class="nav-link" routerLink="/">Inicio</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" routerLink="/cliente/historial">Mis reservas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/cliente/hoteles-mapa">Ver hoteles</a>
           </li>
           <li class="nav-item">
             <a
@@ -46,7 +50,6 @@
           </li>
         </ng-container>
 
-        <!-- Administrador logueado -->
         <ng-container *ngIf="auth.esAdmin()">
           <li class="nav-item">
             <a class="nav-link" routerLink="/">Inicio</a>
@@ -55,9 +58,7 @@
             <a class="nav-link" routerLink="/admin">Hoteles</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/gestion-promociones"
-              >Promociones</a
-            >
+            <a class="nav-link" routerLink="/gestion-promociones">Promociones</a>
           </li>
           <li class="nav-item">
             <a
@@ -73,12 +74,10 @@
     </div>
   </nav>
 
-  <!-- CONTENIDO -->
   <main class="container flex-grow-1 mt-4 mb-5">
     <router-outlet></router-outlet>
   </main>
 
-  <!-- FOOTER -->
   <footer class="bg-dark text-white text-center py-3">
     © 2025 Hilton Hotels & Resort — Todos los derechos reservados
   </footer>
