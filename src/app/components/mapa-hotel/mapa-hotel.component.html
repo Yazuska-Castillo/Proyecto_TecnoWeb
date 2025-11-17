@@ -17,8 +17,24 @@
               <span class="text-warning" *ngFor="let star of getStarsArray(hotel.categoria)">⭐</span>
               <span class="ms-2">{{ hotel.categoria }}</span>
             </div>
-            
-            <button class="btn btn-primary w-100" (click)="$event.stopPropagation()">Ver habitaciones</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5 g-4" *ngIf="hotelSeleccionado">
+      <div class="col-md-6">
+        <div class="texto-box">
+          <h4 class="mb-3">{{ hotelSeleccionado.nombre }}</h4>
+          <p>{{ descripcionActual }}</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="row g-3">
+          <div class="col-6" *ngFor="let imagen of imagenesActuales">
+            <div class="imagen-item">
+              <img [src]="imagen" alt="Habitación">
+            </div>
           </div>
         </div>
       </div>

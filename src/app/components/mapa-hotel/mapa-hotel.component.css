@@ -4,14 +4,31 @@
 }
 
 .card {
-  transition: transform 0.2s;
   border-radius: 8px;
-}
-
-.card:hover {
-  transform: translateY(-5px);
 }
 
 .card.border-primary {
   border-width: 2px;
+}
+
+.texto-box {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 30px;
+  min-height: 400px;
+}
+
+.imagen-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  height: 190px;
+  overflow: hidden;
+}
+
+.imagen-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
