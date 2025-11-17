@@ -17,6 +17,7 @@ import { redireccionarComponent } from './components/redireccionar/redireccionar
 import { CatalogoHotelesComponent } from './components/cliente/catalogo-hoteles/catalogo-hoteles.component';
 import { HabitacionesHotelComponent } from './components/cliente/habitaciones-hotel/habitaciones-hotel.component';
 import { ReservaClienteComponent } from './components/cliente/reserva-cliente/reserva-cliente.component';
+import { PantallaPrincipalComponent } from './components/pantalla-principal/pantalla-principal.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ReservaClienteComponent } from './components/cliente/reserva-cliente/re
     CatalogoHotelesComponent,
     HabitacionesHotelComponent,
     ReservaClienteComponent,
+    PantallaPrincipalComponent,
   ],
   imports: [
     BrowserModule,
