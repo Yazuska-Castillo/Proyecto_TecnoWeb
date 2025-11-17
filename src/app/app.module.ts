@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
+import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -39,7 +39,7 @@ import { ReservaClienteComponent } from './components/cliente/reserva-cliente/re
    
 
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule, NgbModule],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule, RouterModule,NgbModule],
   providers: [],
   bootstrap: [AppComponent],
 })
