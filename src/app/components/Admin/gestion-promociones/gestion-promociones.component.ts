@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { PromocionesService } from '../../services/promociones.service';
-import { Promo, TipoPromo } from '../../models/promo.model';
+import { PromocionesService } from '../../../services/promociones.service';
+import { Promo, TipoPromo } from '../../../models/promo.model';
 
 @Component({
   selector: 'app-gestion-promociones',
   templateUrl: './gestion-promociones.component.html',
-  styleUrls: ['./gestion-promociones.component.css']
+  styleUrls: ['./gestion-promociones.component.css'],
 })
 export class GestionPromocionesComponent {
   nombre = '';
@@ -17,7 +17,7 @@ export class GestionPromocionesComponent {
   promociones: Promo[] = [];
 
   constructor(private promoSrv: PromocionesService) {
-    this.promoSrv.promos$.subscribe((p: Promo[]) => this.promociones = p);
+    this.promoSrv.promos$.subscribe((p: Promo[]) => (this.promociones = p));
   }
 
   agregar() {
@@ -27,7 +27,7 @@ export class GestionPromocionesComponent {
       tipo: this.tipo,
       valor: Number(this.valor) || 0,
       desde: this.desde,
-      hasta: this.hasta
+      hasta: this.hasta,
     });
     this.limpiar();
   }

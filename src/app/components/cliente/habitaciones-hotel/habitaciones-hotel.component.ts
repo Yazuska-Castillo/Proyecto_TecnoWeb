@@ -4,14 +4,16 @@ import { RoomsService } from 'src/app/services/room.service';
 import { HotelesService } from 'src/app/services/hoteles.service';
 import { PromocionesService } from 'src/app/services/promociones.service';
 import { Promo } from 'src/app/models/promo.model';
+import { AuthService } from 'src/app/services/auth.service';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-habitaciones-hotel',
   templateUrl: './habitaciones-hotel.component.html',
-  styleUrls: ['./habitaciones-hotel.component.css']
+  styleUrls: ['./habitaciones-hotel.component.css'],
 })
 export class HabitacionesHotelComponent implements OnInit {
-
   hotelId!: number;
   hotel: any;
   habitaciones: any[] = [];
@@ -23,11 +25,12 @@ export class HabitacionesHotelComponent implements OnInit {
     private router: Router,
     private roomsService: RoomsService,
     private hotelesService: HotelesService,
-    private promocionesService: PromocionesService
+    private promocionesService: PromocionesService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.hotelId = +params['hotelId'];
       this.cargarDatos();
     });
@@ -35,14 +38,28 @@ export class HabitacionesHotelComponent implements OnInit {
   }
 
   cargarDatos() {
-    this.hotel = this.hotelesService.obtenerHoteles()
-      .find(h => h.id === this.hotelId);
+    this.hotel = this.hotelesService
+      .obtenerHoteles()
+      .find((h) => h.id === this.hotelId);
 
-    this.roomsService.getRooms().subscribe(rooms => {
+    this.roomsService.getRooms().subscribe((rooms) => {
       this.habitaciones = rooms.filter(
-        r => r.hotel === this.hotel.nombre && r.status === 'Disponible'
+        (r) => r.hotel === this.hotel.nombre && r.status === 'Disponible'
       );
     });
+  }
+
+  reservar(hab: any) {
+    // Si NO está logueado → abrir modal
+    if (!this.auth.estaLogueado()) {
+      const modalEl = document.getElementById('modalLoginNecesario')!;
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+      return;
+    }
+
+    // Si SÍ está logueado → continuar la reserva
+    this.seleccionarHabitacion(hab);
   }
 
   seleccionarHabitacion(hab: any) {
@@ -50,8 +67,8 @@ export class HabitacionesHotelComponent implements OnInit {
       queryParams: {
         hotel: this.hotel.nombre,
         habitacion: hab.id,
-        personas: this.personas
-      }
+        personas: this.personas,
+      },
     });
   }
 

@@ -1,14 +1,18 @@
 <div class="container mt-4">
-
   <h2>{{ hotel?.nombre }}</h2>
   <p class="text-muted">{{ hotel?.ubicacion }}</p>
 
   <label class="form-label mt-3">¿Cuántas personas?</label>
-  <input type="number" class="form-control w-25 mb-4" [(ngModel)]="personas" min="1" max="6">
+  <input
+    type="number"
+    class="form-control w-25 mb-4"
+    [(ngModel)]="personas"
+    min="1"
+    max="6"
+  />
 
   <div class="row mt-3">
     <div class="col-md-4 mb-3" *ngFor="let r of habitaciones">
-
       <div class="card shadow-sm">
         <div class="card-body">
           <h5>{{ r.type }}</h5>
@@ -37,13 +41,49 @@
         </div>
           <p>Capacidad: {{ r.capacity }} personas</p>
 
-          <button class="btn btn-success w-100"
-            (click)="seleccionarHabitacion(r)">
+          <button class="btn btn-success w-100" (click)="reservar(r)">
             Reservar
           </button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL: Inicio de sesión requerido -->
+<div
+  class="modal fade"
+  id="modalLoginNecesario"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Debes iniciar sesión</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
 
+      <div class="modal-body">
+        Para realizar una reserva necesitas iniciar sesión o registrarte.
+      </div>
+
+      <div class="modal-footer">
+        <a routerLink="/login" class="btn btn-primary" data-bs-dismiss="modal">
+          Iniciar sesión
+        </a>
+
+        <a
+          routerLink="/registro"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Registrarme
+        </a>
+      </div>
     </div>
   </div>
 </div>
