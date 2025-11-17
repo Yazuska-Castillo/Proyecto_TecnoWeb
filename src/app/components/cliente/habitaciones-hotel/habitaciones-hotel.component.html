@@ -17,7 +17,28 @@
         <div class="card-body">
           <h5>{{ r.type }}</h5>
           <p>N° {{ r.number }}</p>
-          <p>💲 {{ r.pricePerNight }} / noche</p>
+          <!-- Sin promoción activa -->
+          <p *ngIf="!promoActiva">
+            💲 {{ r.pricePerNight }} / noche
+          </p>
+
+          <!-- Con promoción activa -->
+          <div *ngIf="promoActiva">
+            <p class="mb-1">
+              <span class="text-muted text-decoration-line-through">
+                ${{ r.pricePerNight }}
+              </span>
+            </p>
+            <p class="mb-1">
+              💲
+              <span class="fw-bold text-success">
+                {{ calcularPrecioConPromo(r) }} / noche
+              </span>
+              <span class="badge bg-success ms-1">
+                {{ promoActiva?.nombre }}
+              </span>
+            </p>
+        </div>
           <p>Capacidad: {{ r.capacity }} personas</p>
 
           <button class="btn btn-success w-100" (click)="reservar(r)">

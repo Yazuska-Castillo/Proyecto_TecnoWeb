@@ -3,6 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RoomsService } from 'src/app/services/room.service';
 import { ReservasService } from 'src/app/services/reservas.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { PromocionesService } from 'src/app/services/promociones.service';
+import { Promo } from 'src/app/models/promo.model';
+
 
 @Component({
   selector: 'app-reserva-cliente',
@@ -10,6 +13,9 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./reserva-cliente.component.css']
 })
 export class ReservaClienteComponent implements OnInit {
+
+  promoActiva: Promo | null = null;
+  precioPorNocheConPromo!: number;
 
   hotel!: string;
   habitacionId!: number;
@@ -26,6 +32,7 @@ export class ReservaClienteComponent implements OnInit {
     private route: ActivatedRoute,
     private roomsService: RoomsService,
     private reservasService: ReservasService,
+    private promosService: PromocionesService,
     private router: Router,
     private auth: AuthService
   ) {}
@@ -41,6 +48,14 @@ export class ReservaClienteComponent implements OnInit {
     this.roomsService.getRooms().subscribe(rooms => {
       this.habitacion = rooms.find(r => r.id === this.habitacionId);
     });
+
+    this.promoActiva = this.promosService.getMejorPromo();
+
+    const base = this.habitacion.pricePerNight;
+    this.precioPorNocheConPromo = this.promosService.calcularPrecioConPromo(base);
+
+    this.calcularTotal();
+
   }
 
   calcularTotal() {
@@ -51,7 +66,8 @@ export class ReservaClienteComponent implements OnInit {
 
       if (diff > 0) {
         const noches = diff / (1000 * 60 * 60 * 24);
-        this.total = noches * this.habitacion.pricePerNight;
+        const precioBase = this.precioPorNocheConPromo ?? this.habitacion.pricePerNight;
+        this.total = noches * precioBase;
       } else {
         this.total = 0;
       }
@@ -79,7 +95,7 @@ export class ReservaClienteComponent implements OnInit {
       hotel: this.habitacion.hotel,
       fechaInicio: this.fechaEntrada,
       fechaFin: this.fechaSalida,
-      precio: this.habitacion.pricePerNight,
+      precio: this.precioPorNocheConPromo ?? this.habitacion.pricePerNight,
       estado: "Confirmada",
       usuarioEmail: usuario.email,
       usuarioNombre: usuario.nombre

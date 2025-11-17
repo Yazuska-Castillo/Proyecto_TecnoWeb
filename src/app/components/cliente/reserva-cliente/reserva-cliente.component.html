@@ -5,7 +5,25 @@
   <div class="habitacion-info">
     <h3>Habitación {{ habitacion.number }} — {{ habitacion.type }}</h3>
     <p><b>Capacidad:</b> {{ habitacion.capacity }} personas</p>
-    <p><b>Precio por noche:</b> ${{ habitacion.pricePerNight }}</p>
+    <!-- Sin promo -->
+    <p *ngIf="!promoActiva">
+      <b>Precio por noche:</b> ${{ habitacion.pricePerNight }}
+    </p>
+
+    <!-- Con promo -->
+    <p *ngIf="promoActiva">
+      <b>Precio por noche:</b>
+      <span class="text-muted text-decoration-line-through me-1">
+        ${{ habitacion.pricePerNight }}
+      </span>
+      <span class="precio">
+        ${{ precioPorNocheConPromo }}
+      </span>
+      <span class="badge bg-success ms-1">
+        {{ promoActiva?.nombre }}
+      </span>
+    </p>
+
     <p><b>Estado actual:</b> {{ habitacion.status }}</p>
   </div>
 
