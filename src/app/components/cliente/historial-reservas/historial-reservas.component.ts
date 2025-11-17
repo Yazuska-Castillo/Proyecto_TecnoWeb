@@ -6,16 +6,15 @@ import * as bootstrap from 'bootstrap';
 @Component({
   selector: 'app-historial-reservas',
   templateUrl: './historial-reservas.component.html',
-  styleUrls: ['./historial-reservas.component.css']
+  styleUrls: ['./historial-reservas.component.css'],
 })
 export class HistorialReservasComponent implements OnInit {
-
   reservas: any[] = [];
 
   // Para Bootstrap Modal
   reservaEditando: any = null;
-  nuevaEntrada: string = "";
-  nuevaSalida: string = "";
+  nuevaEntrada: string = '';
+  nuevaSalida: string = '';
   modalRef: any; // referencia al modal Bootstrap
 
   constructor(
@@ -35,14 +34,14 @@ export class HistorialReservasComponent implements OnInit {
   // ✔ Abrir modal Bootstrap
   // =====================================================
   modificar(reserva: any) {
-    console.log("Reserva seleccionada para editar:", reserva);
+    console.log('Reserva seleccionada para editar:', reserva);
 
     this.reservaEditando = reserva;
     this.nuevaEntrada = reserva.fechaInicio;
     this.nuevaSalida = reserva.fechaFin;
 
     const modalElement = document.getElementById('modalEditarReserva');
-    this.modalRef = new bootstrap.Modal(modalElement!); 
+    this.modalRef = new bootstrap.Modal(modalElement!);
     this.modalRef.show();
   }
 
@@ -51,7 +50,7 @@ export class HistorialReservasComponent implements OnInit {
   // =====================================================
   guardarCambio() {
     if (!this.nuevaEntrada || !this.nuevaSalida) {
-      alert("Selecciona ambas fechas");
+      alert('Selecciona ambas fechas');
       return;
     }
 
@@ -69,7 +68,7 @@ export class HistorialReservasComponent implements OnInit {
     );
 
     this.reservasService.guardarReservas(nuevas);
-    alert("Fechas modificadas correctamente ✔");
+    alert('Fechas modificadas correctamente ✔');
 
     this.modalRef.hide(); // Cerrar modal
 
@@ -82,9 +81,9 @@ export class HistorialReservasComponent implements OnInit {
   // ✔ Cancelar reserva
   // =====================================================
   cancelar(reserva: any) {
-    if (!confirm("¿Seguro que deseas cancelar esta reserva?")) return;
+    if (!confirm('¿Seguro que deseas cancelar esta reserva?')) return;
 
-    reserva.estado = "Cancelada";
+    reserva.estado = 'Cancelada';
 
     const todas = this.reservasService.obtenerReservas();
     const nuevas = todas.map((r: any) =>
@@ -96,7 +95,7 @@ export class HistorialReservasComponent implements OnInit {
 
     this.reservasService.guardarReservas(nuevas);
 
-    alert("Reserva cancelada correctamente ✔");
+    alert('Reserva cancelada correctamente ✔');
 
     const usuario = this.auth.getUsuarioActual();
     this.reservas = nuevas.filter((r: any) => r.usuarioEmail === usuario.email);

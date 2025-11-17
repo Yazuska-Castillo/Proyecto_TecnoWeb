@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
-import { UsuariosService } from './services/usuarios.service';
+import { AuthService } from './services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +8,10 @@ import { UsuariosService } from './services/usuarios.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'Proyecto_TecnoWeb';
-  constructor(private usuariosService: UsuariosService) {}
+  constructor(public auth: AuthService, public router: Router) {}
+  cerrarSesion() {
+    this.auth.logout();
+    localStorage.removeItem('usuarioActual');
+    window.location.href = '/login';
+  }
 }

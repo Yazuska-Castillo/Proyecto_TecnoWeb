@@ -13,11 +13,9 @@ export class AuthService {
 
   constructor() {}
 
-  // Login admin o usuario registrado
-
+  // Inicio de sesión para admin o cliente registrado
   login(usuario: Login): Observable<boolean> {
-
-    // ADMIN
+    // Validación de administrador
     if (
       usuario.user === this.adminCreds.user &&
       usuario.password === this.adminCreds.password
@@ -28,7 +26,7 @@ export class AuthService {
 
       sessionStorage.setItem(this.tokenKey, token);
 
-      // 🔥 Guardar usuario actual
+      // Guardar datos del administrador
       localStorage.setItem(
         'usuarioActual',
         JSON.stringify({
@@ -41,7 +39,7 @@ export class AuthService {
       return of(true);
     }
 
-    // CLIENTES REGISTRADOS
+    // Validación de clientes registrados
     const data = localStorage.getItem('usuarios');
     const usuarios: Usuario[] = data ? JSON.parse(data) : [];
 
@@ -56,7 +54,7 @@ export class AuthService {
 
       sessionStorage.setItem(this.tokenKey, token);
 
-      // 🔥 Guardar usuario actual
+      // Guardar usuario actual
       localStorage.setItem('usuarioActual', JSON.stringify(encontrado));
 
       return of(true);
@@ -65,12 +63,12 @@ export class AuthService {
     return of(false);
   }
 
-  // Verifica si hay sesión
+  // Indica si hay un usuario logueado
   isLogged(): Observable<boolean> {
     return of(sessionStorage.getItem(this.tokenKey) !== null);
   }
 
-  // Rol desde token
+  // Obtiene el rol desde el token
   getRol(): 'admin' | 'cliente' | null {
     const token = sessionStorage.getItem(this.tokenKey);
     if (!token) return null;
@@ -79,14 +77,31 @@ export class AuthService {
     return decoded.split(':')[2] as 'admin' | 'cliente';
   }
 
-  // Cerrar sesión
+  // Cierra la sesión
   logout() {
     sessionStorage.removeItem(this.tokenKey);
   }
 
+  // Obtiene el usuario actual almacenado
   getUsuarioActual() {
-  const data = localStorage.getItem('usuarioActual');
-  return data ? JSON.parse(data) : null;
-}
+    const data = localStorage.getItem('usuarioActual');
+    return data ? JSON.parse(data) : null;
+  }
 
+  // Verifica si hay sesión activa
+  estaLogueado(): boolean {
+    return sessionStorage.getItem(this.tokenKey) !== null;
+  }
+
+  // Verifica si el usuario actual es administrador
+  esAdmin(): boolean {
+    const u = this.getUsuarioActual();
+    return u && u.rol === 'admin';
+  }
+
+  // Verifica si el usuario actual es cliente
+  esCliente(): boolean {
+    const u = this.getUsuarioActual();
+    return u && u.rol === 'cliente';
+  }
 }

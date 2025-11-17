@@ -11,15 +11,27 @@ import { Router } from '@angular/router';
 })
 export class GestionHotelesComponent implements OnInit {
   hoteles: Hotel[] = [];
+  hotelesFiltrados: Hotel[] = [];
+
+  // filtros
+  busqueda: string = '';
+  filtroUbicacion: string = '';
+  filtroCategoria: string = '';
+  ubicaciones: string[] = [];
+
   formHotel!: FormGroup;
   editando = false;
   hotelSeleccionado: Hotel | null = null;
   mensaje: string = '';
 
   constructor(
-    private fb: FormBuilder, private hotelService: HotelesService, private router: Router) {} // ← Inyectar Router
+    private fb: FormBuilder,
+    private hotelService: HotelesService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    // formulario de registro / edición
     this.formHotel = this.fb.group({
       nombre: [
         '',
@@ -49,11 +61,37 @@ export class GestionHotelesComponent implements OnInit {
 
   cargarHoteles() {
     this.hoteles = this.hotelService.obtenerHoteles();
+    this.hotelesFiltrados = [...this.hoteles];
+    this.ubicaciones = [...new Set(this.hoteles.map((h) => h.ubicacion))];
   }
 
+  // aplicar filtros
+  aplicarFiltros() {
+    this.hotelesFiltrados = this.hoteles.filter((h) => {
+      const coincideNombre = h.nombre
+        .toLowerCase()
+        .includes(this.busqueda.toLowerCase());
+      const coincideUbicacion =
+        this.filtroUbicacion === '' || h.ubicacion === this.filtroUbicacion;
+      const coincideCategoria =
+        this.filtroCategoria === '' ||
+        h.categoria.toString() === this.filtroCategoria;
+      return coincideNombre && coincideUbicacion && coincideCategoria;
+    });
+  }
+
+  // limpiar filtros
+  limpiarFiltros() {
+    this.busqueda = '';
+    this.filtroUbicacion = '';
+    this.filtroCategoria = '';
+    this.aplicarFiltros();
+  }
+
+  // guardar hotel (agregar o editar)
   guardarHotel() {
     if (this.formHotel.invalid) {
-      this.mensaje = 'Por favor completa los campos correctamente';
+      this.mensaje = 'Complete los campos correctamente';
       return;
     }
 
@@ -64,10 +102,10 @@ export class GestionHotelesComponent implements OnInit {
 
     if (this.editando) {
       this.hotelService.actualizarHotel(nuevoHotel);
-      this.mensaje = 'Hotel actualizado correctamente';
+      this.mensaje = 'Hotel actualizado';
     } else {
       this.hotelService.agregarHotel(nuevoHotel);
-      this.mensaje = 'Hotel agregado correctamente';
+      this.mensaje = 'Hotel agregado';
     }
 
     this.formHotel.reset();
@@ -75,40 +113,47 @@ export class GestionHotelesComponent implements OnInit {
     this.cargarHoteles();
   }
 
+  // activar modo edición
   editarHotel(hotel: Hotel) {
     this.editando = true;
     this.hotelSeleccionado = hotel;
     this.formHotel.patchValue(hotel);
   }
 
+  // eliminar hotel
   eliminarHotel(id: number) {
-    if (confirm('¿Deseas eliminar este hotel?')) {
+    if (confirm('¿Eliminar este hotel?')) {
       this.hotelService.eliminarHotel(id);
       this.mensaje = 'Hotel eliminado';
       this.cargarHoteles();
     }
   }
 
+  // cancelar edición
   cancelarEdicion() {
     this.editando = false;
     this.hotelSeleccionado = null;
     this.formHotel.reset();
   }
+
+  // abrir modal para agregar
   abrirModalAgregar() {
     this.editando = false;
     this.hotelSeleccionado = null;
     this.formHotel.reset();
   }
 
+  // abrir modal para editar
   abrirModalEditar(hotel: any) {
     this.editando = true;
     this.hotelSeleccionado = hotel;
     this.formHotel.patchValue(hotel);
   }
 
+  // navegar a habitaciones del hotel
   verHabitacionesHotel(hotelId: number): void {
-    this.router.navigate(['/admin/habitaciones'], { 
-      queryParams: { hotelId: hotelId } 
+    this.router.navigate(['/admin/habitaciones'], {
+      queryParams: { hotelId: hotelId },
     });
   }
 }
