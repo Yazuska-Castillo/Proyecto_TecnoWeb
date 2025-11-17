@@ -1,0 +1,37 @@
+<div class="reserva-container" *ngIf="habitacion">
+
+  <h2>🏨 Reserva en {{ habitacion.hotel }}</h2>
+
+  <div class="habitacion-info">
+    <h3>Habitación {{ habitacion.number }} — {{ habitacion.type }}</h3>
+    <p><b>Capacidad:</b> {{ habitacion.capacity }} personas</p>
+    <p><b>Precio por noche:</b> ${{ habitacion.pricePerNight }}</p>
+    <p><b>Estado actual:</b> {{ habitacion.status }}</p>
+  </div>
+
+  <hr />
+
+  <!-- Selección de fechas -->
+  <div class="fechas">
+    <label>
+      Fecha de entrada:
+      <input type="date" [(ngModel)]="fechaEntrada" (change)="calcularTotal()">
+    </label>
+
+    <label>
+      Fecha de salida:
+      <input type="date" [(ngModel)]="fechaSalida" (change)="calcularTotal()">
+    </label>
+  </div>
+
+  <div class="total" *ngIf="total > 0">
+    <h3>Total: <span class="precio">${{ total }}</span></h3>
+  </div>
+
+  <button class="btn-reservar" (click)="reservar()">Confirmar reserva</button>
+
+</div>
+
+<div *ngIf="!habitacion">
+  <p>Cargando información de la habitación...</p>
+</div>

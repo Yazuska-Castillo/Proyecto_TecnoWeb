@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,6 +11,14 @@ import { PanelClienteComponent } from './components/cliente/panel-cliente/panel-
 import { HistorialReservasComponent } from './components/cliente/historial-reservas/historial-reservas.component';
 import { GestionHotelesComponent } from './components/Admin/gestion-hoteles/gestion-hoteles.component';
 import { GestionPromocionesComponent } from './components/gestion-promociones/gestion-promociones.component';
+import { LoginComponent } from './components/login/login.component';
+import { GestionHabitacionesComponent } from './components/Admin/gestion-habitaciones/gestion-habitaciones.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RegistroComponent } from './components/registro/registro.component';
+import { redireccionarComponent } from './components/redireccionar/redireccionar.component';
+import { CatalogoHotelesComponent } from './components/cliente/catalogo-hoteles/catalogo-hoteles.component';
+import { HabitacionesHotelComponent } from './components/cliente/habitaciones-hotel/habitaciones-hotel.component';
+import { ReservaClienteComponent } from './components/cliente/reserva-cliente/reserva-cliente.component';
 
 @NgModule({
   declarations: [
@@ -20,15 +28,19 @@ import { GestionPromocionesComponent } from './components/gestion-promociones/ge
     PanelClienteComponent,
     HistorialReservasComponent,
     GestionHotelesComponent,
-    GestionPromocionesComponent
+    GestionPromocionesComponent,
+    LoginComponent,
+    RegistroComponent,
+    redireccionarComponent,
+    GestionHabitacionesComponent,
+    CatalogoHotelesComponent,
+    HabitacionesHotelComponent,
+    ReservaClienteComponent,
+   
+
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule //  [(ngModel)]
-  ],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule, NgbModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
-

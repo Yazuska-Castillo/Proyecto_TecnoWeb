@@ -1,0 +1,28 @@
+<div class="container mt-4">
+
+  <h2>{{ hotel?.nombre }}</h2>
+  <p class="text-muted">{{ hotel?.ubicacion }}</p>
+
+  <label class="form-label mt-3">¿Cuántas personas?</label>
+  <input type="number" class="form-control w-25 mb-4" [(ngModel)]="personas" min="1" max="6">
+
+  <div class="row mt-3">
+    <div class="col-md-4 mb-3" *ngFor="let r of habitaciones">
+
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5>{{ r.type }}</h5>
+          <p>N° {{ r.number }}</p>
+          <p>💲 {{ r.pricePerNight }} / noche</p>
+          <p>Capacidad: {{ r.capacity }} personas</p>
+
+          <button class="btn btn-success w-100"
+            (click)="seleccionarHabitacion(r)">
+            Reservar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

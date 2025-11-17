@@ -1,0 +1,63 @@
+.reserva-container {
+  width: 90%;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: #f8f8f8;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.habitacion-info {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #1976d2;
+}
+
+.fechas {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.fechas label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+input[type="date"] {
+  margin-top: 5px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.total {
+  text-align: center;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.precio {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.btn-reservar {
+  width: 100%;
+  padding: 12px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-reservar:hover {
+  background: #125aa0;
+}

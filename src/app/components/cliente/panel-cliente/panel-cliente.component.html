@@ -2,7 +2,7 @@
 
 <div class="perfil">
   <div class="usuario">
-    <img src="assets/img/avatar.png" alt="Avatar" class="avatar">
+    <img src="assets/img/avatar.png" alt="Avatar" class="avatar" />
     <h2>{{ usuario.nombre }}</h2>
     <p>{{ usuario.email }}</p>
   </div>
@@ -10,7 +10,8 @@
   <div class="menu">
     <button routerLink="/cliente/historial">🕓 Historial de reservas</button>
     <button routerLink="/cliente/datos">👤 Mis datos personales</button>
-    <button routerLink="/">⬅️ Volver al catálogo</button>
+    <button routerLink="/cliente/hoteles">🏨 Ver hoteles</button>
+
   </div>
 
   <router-outlet></router-outlet>
