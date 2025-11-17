@@ -18,7 +18,7 @@ import { CatalogoHotelesComponent } from './components/cliente/catalogo-hoteles/
 import { HabitacionesHotelComponent } from './components/cliente/habitaciones-hotel/habitaciones-hotel.component';
 import { ReservaClienteComponent } from './components/cliente/reserva-cliente/reserva-cliente.component';
 import { PantallaPrincipalComponent } from './components/pantalla-principal/pantalla-principal.component';
-import { MapaHotelComponent } from './components/mapa-hotel/mapa-hotel.component';
+import { MapaHotelComponent } from './components/cliente/mapa-hotel/mapa-hotel.component';
 
 @NgModule({
   declarations: [
