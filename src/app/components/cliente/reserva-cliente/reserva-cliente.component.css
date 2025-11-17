@@ -61,3 +61,12 @@ input[type="date"] {
 .btn-reservar:hover {
   background: #125aa0;
 }
+
+.precio {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.badge.bg-success {
+  font-size: 0.8rem;
+}

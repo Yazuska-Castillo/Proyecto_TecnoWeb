@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoomsService } from 'src/app/services/room.service';
 import { HotelesService } from 'src/app/services/hoteles.service';
+import { PromocionesService } from 'src/app/services/promociones.service';
+import { Promo } from 'src/app/models/promo.model';
 import { AuthService } from 'src/app/services/auth.service';
 
 declare var bootstrap: any;
@@ -16,12 +18,14 @@ export class HabitacionesHotelComponent implements OnInit {
   hotel: any;
   habitaciones: any[] = [];
   personas = 1;
+  promoActiva: Promo | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private roomsService: RoomsService,
     private hotelesService: HotelesService,
+    private promocionesService: PromocionesService,
     private auth: AuthService
   ) {}
 
@@ -30,6 +34,7 @@ export class HabitacionesHotelComponent implements OnInit {
       this.hotelId = +params['hotelId'];
       this.cargarDatos();
     });
+    this.promoActiva = this.promocionesService.getMejorPromo();
   }
 
   cargarDatos() {
@@ -66,4 +71,10 @@ export class HabitacionesHotelComponent implements OnInit {
       },
     });
   }
+
+  calcularPrecioConPromo(hab: any): number {
+    return this.promocionesService.calcularPrecioConPromo(hab.pricePerNight);
+  }
+
+
 }
