@@ -37,9 +37,10 @@ export class RoomsService {
     // 2️⃣ Convertir HABITACIONES predefinidas al formato Room
     const predefinidas: Room[] = HABITACIONES.map((h, index) => ({
       id: h.id,
-      number: String(100 + index),      
+      number: String(100 + index),
       type: h.nombre,
       hotel: h.hotel,
+      idHotel: h.id,               // 🔥 NECESARIO para las reservas
       pricePerNight: h.precioPorNoche,
       capacity: 2,
       status: 'Disponible'
@@ -130,5 +131,23 @@ export class RoomsService {
 
     this.roomsSubject.next(nuevas);
     this.guardarEnLocalStorage(nuevas);
+  }
+
+  // ============================================================
+  //   7. ACTUALIZAR ESTADO DE HABITACIÓN (Disponible/Ocupada)
+  // ============================================================
+  actualizarEstadoHabitacion(id: number, nuevoEstado: string) {
+    const rooms = this.roomsSubject.value;
+    const index = rooms.findIndex(r => r.id === id);
+
+    if (index !== -1) {
+      rooms[index].status = nuevoEstado;
+
+      // Actualizar observable
+      this.roomsSubject.next([...rooms]);
+
+      // Guardar solo locales
+      this.guardarEnLocalStorage(rooms);
+    }
   }
 }

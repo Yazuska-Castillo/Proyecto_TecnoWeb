@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { ReservasService } from 'src/app/services/reservas.service';
+import { RoomsService } from 'src/app/services/room.service';
 import * as bootstrap from 'bootstrap';
 
 @Component({
@@ -11,15 +12,15 @@ import * as bootstrap from 'bootstrap';
 export class HistorialReservasComponent implements OnInit {
   reservas: any[] = [];
 
-  // Para Bootstrap Modal
   reservaEditando: any = null;
   nuevaEntrada: string = '';
   nuevaSalida: string = '';
-  modalRef: any; // referencia al modal Bootstrap
+  modalRef: any;
 
   constructor(
     private auth: AuthService,
-    private reservasService: ReservasService
+    private reservasService: ReservasService,
+    private roomsService: RoomsService
   ) {}
 
   ngOnInit(): void {
@@ -31,11 +32,9 @@ export class HistorialReservasComponent implements OnInit {
   }
 
   // =====================================================
-  // ✔ Abrir modal Bootstrap
+  // ✔ Abrir modal
   // =====================================================
   modificar(reserva: any) {
-    console.log('Reserva seleccionada para editar:', reserva);
-
     this.reservaEditando = reserva;
     this.nuevaEntrada = reserva.fechaInicio;
     this.nuevaSalida = reserva.fechaFin;
@@ -46,7 +45,7 @@ export class HistorialReservasComponent implements OnInit {
   }
 
   // =====================================================
-  // ✔ Guardar cambios de fecha
+  // ✔ Guardar cambio de fechas
   // =====================================================
   guardarCambio() {
     if (!this.nuevaEntrada || !this.nuevaSalida) {
@@ -54,48 +53,42 @@ export class HistorialReservasComponent implements OnInit {
       return;
     }
 
-    // Actualizar los datos
     this.reservaEditando.fechaInicio = this.nuevaEntrada;
     this.reservaEditando.fechaFin = this.nuevaSalida;
 
-    // Guardar en storage
     const todas = this.reservasService.obtenerReservas();
     const nuevas = todas.map((r: any) =>
-      r.usuarioEmail === this.reservaEditando.usuarioEmail &&
-      r.habitacion === this.reservaEditando.habitacion
-        ? this.reservaEditando
-        : r
+      r.id === this.reservaEditando.id ? this.reservaEditando : r
     );
 
     this.reservasService.guardarReservas(nuevas);
+
     alert('Fechas modificadas correctamente ✔');
+    this.modalRef.hide();
 
-    this.modalRef.hide(); // Cerrar modal
-
-    // Actualizar vista
     const usuario = this.auth.getUsuarioActual();
     this.reservas = nuevas.filter((r: any) => r.usuarioEmail === usuario.email);
   }
 
   // =====================================================
-  // ✔ Cancelar reserva
+  // ✔ Cancelar reserva (libera habitación)
   // =====================================================
   cancelar(reserva: any) {
     if (!confirm('¿Seguro que deseas cancelar esta reserva?')) return;
 
     reserva.estado = 'Cancelada';
 
+    // Liberar habitación
+    this.roomsService.actualizarEstadoHabitacion(reserva.habitacionId, 'Disponible');
+
     const todas = this.reservasService.obtenerReservas();
     const nuevas = todas.map((r: any) =>
-      r.usuarioEmail === reserva.usuarioEmail &&
-      r.habitacion === reserva.habitacion
-        ? reserva
-        : r
+      r.id === reserva.id ? reserva : r
     );
 
     this.reservasService.guardarReservas(nuevas);
 
-    alert('Reserva cancelada correctamente ✔');
+    alert('Reserva cancelada ✔');
 
     const usuario = this.auth.getUsuarioActual();
     this.reservas = nuevas.filter((r: any) => r.usuarioEmail === usuario.email);

@@ -8,20 +8,22 @@ import { Usuario } from '../models/usuario';
   providedIn: 'root',
 })
 export class AuthService {
-  private adminCreds = new Login('admin', 'admin');
   private tokenKey = 'token';
+
+  // Credenciales del admin (COINCIDEN con usuarios-predefinidos.ts)
+  private adminEmail = 'admin@hotel.com';
+  private adminPassword = 'admin123';
 
   constructor() {}
 
-  // Inicio de sesión para admin o cliente registrado
+  // Inicio de sesión para admin o clientes registrados
   login(usuario: Login): Observable<boolean> {
+
     // Validación de administrador
-    if (
-      usuario.user === this.adminCreds.user &&
-      usuario.password === this.adminCreds.password
-    ) {
+    if (usuario.email === this.adminEmail && usuario.contrasena === this.adminPassword) {
+
       const token = Buffer.from(
-        `${usuario.user}:${usuario.password}:admin`
+        `${usuario.email}:${usuario.contrasena}:admin`
       ).toString('base64');
 
       sessionStorage.setItem(this.tokenKey, token);
@@ -30,8 +32,10 @@ export class AuthService {
       localStorage.setItem(
         'usuarioActual',
         JSON.stringify({
+          id: 0,
           nombre: 'Administrador',
-          email: 'admin@hotel.com',
+          email: this.adminEmail,
+          contrasena: this.adminPassword,
           rol: 'admin',
         })
       );
@@ -44,17 +48,16 @@ export class AuthService {
     const usuarios: Usuario[] = data ? JSON.parse(data) : [];
 
     const encontrado = usuarios.find(
-      (u) => u.usuario === usuario.user && u.contrasena === usuario.password
+      (u) => u.email === usuario.email && u.contrasena === usuario.contrasena
     );
 
     if (encontrado) {
       const token = Buffer.from(
-        `${encontrado.usuario}:${encontrado.contrasena}:${encontrado.rol}`
+        `${encontrado.email}:${encontrado.contrasena}:${encontrado.rol}`
       ).toString('base64');
 
       sessionStorage.setItem(this.tokenKey, token);
 
-      // Guardar usuario actual
       localStorage.setItem('usuarioActual', JSON.stringify(encontrado));
 
       return of(true);
@@ -63,12 +66,10 @@ export class AuthService {
     return of(false);
   }
 
-  // Indica si hay un usuario logueado
   isLogged(): Observable<boolean> {
     return of(sessionStorage.getItem(this.tokenKey) !== null);
   }
 
-  // Obtiene el rol desde el token
   getRol(): 'admin' | 'cliente' | null {
     const token = sessionStorage.getItem(this.tokenKey);
     if (!token) return null;
@@ -77,29 +78,25 @@ export class AuthService {
     return decoded.split(':')[2] as 'admin' | 'cliente';
   }
 
-  // Cierra la sesión
   logout() {
     sessionStorage.removeItem(this.tokenKey);
+    localStorage.removeItem('usuarioActual');
   }
 
-  // Obtiene el usuario actual almacenado
   getUsuarioActual() {
     const data = localStorage.getItem('usuarioActual');
     return data ? JSON.parse(data) : null;
   }
 
-  // Verifica si hay sesión activa
   estaLogueado(): boolean {
     return sessionStorage.getItem(this.tokenKey) !== null;
   }
 
-  // Verifica si el usuario actual es administrador
   esAdmin(): boolean {
     const u = this.getUsuarioActual();
     return u && u.rol === 'admin';
   }
 
-  // Verifica si el usuario actual es cliente
   esCliente(): boolean {
     const u = this.getUsuarioActual();
     return u && u.rol === 'cliente';

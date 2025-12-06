@@ -5,17 +5,34 @@
 </div>
 
 <div class="reserva" *ngFor="let r of reservas">
-  <h3>{{ r.habitacion }} — en {{ r.hotel }}</h3>
 
-  <p><b>Fechas:</b> {{ r.fechaInicio }} → {{ r.fechaFin }}</p>
+  <h3>
+    Habitación {{ r.numeroHabitacion }} — {{ r.tipoHabitacion }}
+    <br>
+    <small class="text-muted">Hotel: {{ r.hotelNombre }}</small>
+  </h3>
+
+  <p><b>Entrada:</b> {{ r.fechaInicio }}</p>
+  <p><b>Salida:</b> {{ r.fechaFin }}</p>
   <p><b>Precio:</b> ${{ r.precio }}</p>
-  <p><b>Estado:</b> {{ r.estado }}</p>
 
-  <div class="acciones">
-    <button (click)="modificar(r)">Modificar fecha</button>
-    <button (click)="cancelar(r)">Cancelar reserva</button>
+  <p>
+    <b>Estado:</b>
+    <span [ngClass]="{
+      'text-success': r.estado === 'Confirmada',
+      'text-danger': r.estado === 'Cancelada'
+    }">
+      {{ r.estado }}
+    </span>
+  </p>
+
+  <div class="acciones" *ngIf="r.estado === 'Confirmada'">
+    <button class="btn btn-primary me-2" (click)="modificar(r)">Modificar fecha</button>
+    <button class="btn btn-danger" (click)="cancelar(r)">Cancelar reserva</button>
   </div>
+
 </div>
+
 <!-- =====================================================
      MODAL BOOTSTRAP EDITAR FECHAS
 ===================================================== -->
