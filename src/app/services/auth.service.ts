@@ -18,10 +18,11 @@ export class AuthService {
 
   // Inicio de sesión para admin o clientes registrados
   login(usuario: Login): Observable<boolean> {
-
     // Validación de administrador
-    if (usuario.email === this.adminEmail && usuario.contrasena === this.adminPassword) {
-
+    if (
+      usuario.email === this.adminEmail &&
+      usuario.contrasena === this.adminPassword
+    ) {
       const token = Buffer.from(
         `${usuario.email}:${usuario.contrasena}:admin`
       ).toString('base64');
