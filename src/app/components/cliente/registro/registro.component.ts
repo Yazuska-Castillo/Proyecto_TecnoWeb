@@ -12,7 +12,7 @@ export class RegistroComponent {
   // Datos del formulario
   datosRegistro = {
     nombre: '',
-    usuario: '',
+    email: '',
     contrasena: '',
     confirmarContrasena: '',
   };
@@ -34,29 +34,31 @@ export class RegistroComponent {
     // Validar campos vacíos
     if (
       !this.datosRegistro.nombre ||
-      !this.datosRegistro.usuario ||
+      !this.datosRegistro.email ||
       !this.datosRegistro.contrasena
     ) {
       alert('Todos los campos son obligatorios.');
       return;
     }
 
-    // Crear usuario
+    // Crear usuario con ID automático
     const nuevo = new Usuario(
+      Date.now(),                       // ID único
       this.datosRegistro.nombre,
-      this.datosRegistro.usuario,
-      this.datosRegistro.contrasena
+      this.datosRegistro.email,
+      this.datosRegistro.contrasena,
+      'cliente'
     );
 
-    // Guardar usuario
+    // Intentar registrar usuario
     const ok = this.usuariosService.registrarUsuario(nuevo);
 
     if (!ok) {
-      alert('Este usuario ya existe.');
+      alert('Este email ya está registrado.');
       return;
     }
 
-    alert('Cuenta creada. Ahora inicia sesión.');
+    alert('Cuenta creada correctamente. Ahora inicia sesión.');
     this.router.navigate(['/login']);
   }
 }

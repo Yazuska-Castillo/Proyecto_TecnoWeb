@@ -2,6 +2,30 @@
   <h2>{{ hotel?.nombre }}</h2>
   <p class="text-muted">{{ hotel?.ubicacion }}</p>
 
+  <!-- ⭐ NUEVO: Selección de fechas -->
+  <div class="filtros-fechas mb-3 d-flex align-items-center">
+    <div class="me-3">
+      <label class="form-label">Fecha entrada</label>
+      <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="fechaEntrada"
+        (change)="cargarDatos()"
+      />
+    </div>
+
+    <div class="me-3">
+      <label class="form-label">Fecha salida</label>
+      <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="fechaSalida"
+        (change)="cargarDatos()"
+      />
+    </div>
+  </div>
+
+  <!-- Cantidad de personas -->
   <label class="form-label mt-3">¿Cuántas personas?</label>
   <input
     type="number"
@@ -11,12 +35,19 @@
     max="6"
   />
 
+  <!-- ⭐ NUEVO: Mensaje si no hay habitaciones -->
+  <div *ngIf="habitaciones.length === 0" class="alert alert-warning">
+    ⚠️ No hay habitaciones disponibles para las fechas seleccionadas.
+  </div>
+
+  <!-- Lista de habitaciones -->
   <div class="row mt-3">
     <div class="col-md-4 mb-3" *ngFor="let r of habitaciones">
       <div class="card shadow-sm">
         <div class="card-body">
           <h5>{{ r.type }}</h5>
           <p>N° {{ r.number }}</p>
+
           <!-- Sin promoción activa -->
           <p *ngIf="!promoActiva">
             💲 {{ r.pricePerNight }} / noche
@@ -38,7 +69,8 @@
                 {{ promoActiva?.nombre }}
               </span>
             </p>
-        </div>
+          </div>
+
           <p>Capacidad: {{ r.capacity }} personas</p>
 
           <button class="btn btn-success w-100" (click)="reservar(r)">
@@ -49,6 +81,7 @@
     </div>
   </div>
 </div>
+
 <!-- MODAL: Inicio de sesión requerido -->
 <div
   class="modal fade"
