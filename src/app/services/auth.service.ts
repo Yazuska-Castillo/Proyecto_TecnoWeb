@@ -1,104 +1,102 @@
 import { Injectable } from '@angular/core';
 import { Login } from '../models/login';
 import { Observable, of } from 'rxjs';
-import { Buffer } from 'buffer';
 import { Usuario } from '../models/usuario';
+import { CryptoService } from './crypto.service';
+import { UsuariosService } from './usuarios.service';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private tokenKey = 'token';
+  private SECRET_KEY = 'MiClaveSecreta';
 
-  // Credenciales del admin (COINCIDEN con usuarios-predefinidos.ts)
   private adminEmail = 'admin@hotel.com';
-  private adminPassword = 'admin123';
+  private adminPasswordHash = CryptoService.hashPassword('admin123');
 
-  constructor() {}
+  constructor(private usuariosService: UsuariosService) {}
 
-  // Inicio de sesión para admin o clientes registrados
-  login(usuario: Login): Observable<boolean> {
-
-    // Validación de administrador
-    if (usuario.email === this.adminEmail && usuario.contrasena === this.adminPassword) {
-
-      const token = Buffer.from(
-        `${usuario.email}:${usuario.contrasena}:admin`
-      ).toString('base64');
-
-      sessionStorage.setItem(this.tokenKey, token);
-
-      // Guardar datos del administrador
-      localStorage.setItem(
-        'usuarioActual',
-        JSON.stringify({
-          id: 0,
-          nombre: 'Administrador',
-          email: this.adminEmail,
-          contrasena: this.adminPassword,
-          rol: 'admin',
-        })
-      );
-
-      return of(true);
-    }
-
-    // Validación de clientes registrados
-    const data = localStorage.getItem('usuarios');
-    const usuarios: Usuario[] = data ? JSON.parse(data) : [];
-
-    const encontrado = usuarios.find(
-      (u) => u.email === usuario.email && u.contrasena === usuario.contrasena
-    );
-
-    if (encontrado) {
-      const token = Buffer.from(
-        `${encontrado.email}:${encontrado.contrasena}:${encontrado.rol}`
-      ).toString('base64');
-
-      sessionStorage.setItem(this.tokenKey, token);
-
-      localStorage.setItem('usuarioActual', JSON.stringify(encontrado));
-
-      return of(true);
-    }
-
-    return of(false);
+  private crearToken(email: string, rol: string): string {
+    const payload = JSON.stringify({
+      email,
+      rol,
+      ts: Date.now(),
+    });
+    return CryptoJS.AES.encrypt(payload, this.SECRET_KEY).toString();
   }
 
-  isLogged(): Observable<boolean> {
-    return of(sessionStorage.getItem(this.tokenKey) !== null);
-  }
-
-  getRol(): 'admin' | 'cliente' | null {
+  private leerToken(): any | null {
     const token = sessionStorage.getItem(this.tokenKey);
     if (!token) return null;
 
-    const decoded = Buffer.from(token, 'base64').toString('ascii');
-    return decoded.split(':')[2] as 'admin' | 'cliente';
+    try {
+      const bytes = CryptoJS.AES.decrypt(token, this.SECRET_KEY);
+      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    } catch {
+      return null;
+    }
   }
 
-  logout() {
+  login(login: Login): Observable<boolean> {
+    const hash = CryptoService.hashPassword(login.contrasena);
+
+    // ADMIN
+    if (login.email === this.adminEmail && hash === this.adminPasswordHash) {
+      const token = this.crearToken(login.email, 'admin');
+      sessionStorage.setItem(this.tokenKey, token);
+      return of(true);
+    }
+
+    // CLIENTE
+    const usuarios = this.usuariosService.getUsuarios();
+    const encontrado = usuarios.find(
+      (u) => u.email === login.email && u.passwordHash === hash
+    );
+
+    if (!encontrado) return of(false);
+
+    const token = this.crearToken(encontrado.email, encontrado.rol);
+    sessionStorage.setItem(this.tokenKey, token);
+    return of(true);
+  }
+
+  getEmailDesdeToken(): string | null {
+    const token = sessionStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+      const bytes = CryptoJS.AES.decrypt(token, 'MiClaveSecreta');
+      const payload = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      return payload.email ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  logout(): void {
     sessionStorage.removeItem(this.tokenKey);
-    localStorage.removeItem('usuarioActual');
-  }
-
-  getUsuarioActual() {
-    const data = localStorage.getItem('usuarioActual');
-    return data ? JSON.parse(data) : null;
   }
 
   estaLogueado(): boolean {
-    return sessionStorage.getItem(this.tokenKey) !== null;
+    return !!this.leerToken();
+  }
+
+  isLogged(): Observable<boolean> {
+    return of(this.estaLogueado());
+  }
+
+  getRol(): 'admin' | 'cliente' | null {
+    const data = this.leerToken();
+    return data?.rol ?? null;
   }
 
   esAdmin(): boolean {
-    const u = this.getUsuarioActual();
-    return u && u.rol === 'admin';
+    return this.getRol() === 'admin';
   }
 
   esCliente(): boolean {
-    const u = this.getUsuarioActual();
-    return u && u.rol === 'cliente';
+    return this.getRol() === 'cliente';
   }
 }

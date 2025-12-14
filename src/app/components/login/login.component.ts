@@ -9,10 +9,9 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-
   datosLogin = {
     email: '',
-    contrasena: ''
+    contrasena: '',
   };
 
   constructor(private router: Router, private authService: AuthService) {}
@@ -34,7 +33,7 @@ export class LoginComponent {
       if (rol === 'admin') {
         this.router.navigate(['/admin']);
       } else {
-        this.router.navigate(['/cliente/hoteles']);  // ✅ AQUÍ EL CAMBIO
+        this.router.navigate(['/cliente/hoteles-mapa']);
       }
     });
   }

@@ -4,6 +4,9 @@ export class Hotel {
     public nombre: string,
     public ubicacion: string,
     public categoria: number,
-    public habitaciones: number
+    public habitaciones: number,
+    public descripcion: string,
+    public imagenes: string[],
+    public mapaUrl: string
   ) {}
 }

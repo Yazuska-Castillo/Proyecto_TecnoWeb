@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-
 import { RegistroComponent } from './components/cliente/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
 import { GestionPromocionesComponent } from './components/Admin/gestion-promociones/gestion-promociones.component';
@@ -14,7 +13,7 @@ import { HabitacionesHotelComponent } from './components/cliente/habitaciones-ho
 import { ReservaClienteComponent } from './components/cliente/reserva-cliente/reserva-cliente.component';
 import { PantallaPrincipalComponent } from './components/pantalla-principal/pantalla-principal.component';
 import { MapaHotelComponent } from './components/cliente/mapa-hotel/mapa-hotel.component';
-
+import { ConfiguracionComponent } from './components/cliente/configuracion/configuracion.component';
 
 import { protectGuard } from './guards/guard.guard';
 import { adminGuard } from './guards/admin.guard';
@@ -23,10 +22,8 @@ import { redireccionarComponent } from './components/redireccionar/redireccionar
 const routes: Routes = [
   { path: '', component: PantallaPrincipalComponent },
 
-
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
-
 
   {
     path: 'cliente',
@@ -37,8 +34,6 @@ const routes: Routes = [
       { path: '', redirectTo: 'historial', pathMatch: 'full' },
     ],
   },
-
-
 
   {
     path: 'cliente/hoteles',
@@ -56,12 +51,10 @@ const routes: Routes = [
     canActivate: [protectGuard],
   },
 
-
   {
     path: 'cliente/hoteles-mapa',
     component: MapaHotelComponent,
   },
-
 
   {
     path: 'admin',
@@ -80,7 +73,11 @@ const routes: Routes = [
     component: GestionHabitacionesComponent,
     canActivate: [protectGuard, adminGuard],
   },
-
+  {
+    path: 'configuracion',
+    component: ConfiguracionComponent,
+    canActivate: [protectGuard],
+  },
 
   { path: '**', component: redireccionarComponent },
 ];
