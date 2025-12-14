@@ -14,60 +14,124 @@
 
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav ms-auto">
+        <!-- NO LOGUEADO -->
         <ng-container *ngIf="!auth.estaLogueado()">
           <li class="nav-item">
             <a class="nav-link" routerLink="/">Inicio</a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" routerLink="/cliente/hoteles-mapa">Ver hoteles</a>
+            <a class="nav-link" routerLink="/cliente/hoteles-mapa">
+              Ver hoteles
+            </a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" routerLink="/login">Iniciar sesión</a>
+            <a class="nav-link" routerLink="/login"> Iniciar sesión </a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" routerLink="/registro">Registrarse</a>
+            <a class="nav-link" routerLink="/registro"> Registrarse </a>
           </li>
         </ng-container>
 
+        <!-- CLIENTE -->
         <ng-container *ngIf="auth.esCliente()">
           <li class="nav-item">
             <a class="nav-link" routerLink="/">Inicio</a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" routerLink="/cliente/historial">Mis reservas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/cliente/hoteles-mapa">Ver hoteles</a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              (click)="cerrarSesion()"
-              style="cursor: pointer"
-            >
-              Cerrar sesión
+            <a class="nav-link" routerLink="/cliente/historial">
+              Mis reservas
             </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/cliente/hoteles-mapa">
+              Ver hoteles
+            </a>
+          </li>
+
+          <!-- MENÚ CONFIGURACIÓN CLIENTE -->
+          <li class="nav-item" ngbDropdown>
+            <a class="nav-link" ngbDropdownToggle style="cursor: pointer">
+              &#8942;
+            </a>
+
+            <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
+              <button
+                ngbDropdownItem
+                class="dropdown-item"
+                [routerLink]="['/configuracion']"
+              >
+                Ajustes
+              </button>
+
+              <button
+                ngbDropdownItem
+                class="dropdown-item"
+                [routerLink]="['/configuracion']"
+              >
+                Mi perfil
+              </button>
+
+              <div class="dropdown-divider"></div>
+
+              <button
+                ngbDropdownItem
+                class="dropdown-item text-danger"
+                type="button"
+                (click)="cerrarSesion()"
+              >
+                Cerrar sesión
+              </button>
+            </div>
           </li>
         </ng-container>
 
+        <!-- ADMIN -->
         <ng-container *ngIf="auth.esAdmin()">
           <li class="nav-item">
             <a class="nav-link" routerLink="/">Inicio</a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" routerLink="/admin">Hoteles</a>
+            <a class="nav-link" routerLink="/admin"> Hoteles </a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" routerLink="/gestion-promociones">Promociones</a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              (click)="cerrarSesion()"
-              style="cursor: pointer"
-            >
-              Cerrar sesión
+            <a class="nav-link" routerLink="/gestion-promociones">
+              Promociones
             </a>
+          </li>
+
+          <!-- MENÚ CONFIGURACIÓN ADMIN -->
+          <li class="nav-item" ngbDropdown>
+            <a class="nav-link" ngbDropdownToggle style="cursor: pointer">
+              ⋮
+            </a>
+
+            <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
+              <button
+                ngbDropdownItem
+                class="dropdown-item"
+                [routerLink]="['/configuracion']"
+              >
+                Ajustes
+              </button>
+
+              <div class="dropdown-divider"></div>
+
+              <button
+                ngbDropdownItem
+                class="dropdown-item text-danger"
+                type="button"
+                (click)="cerrarSesion()"
+              >
+                Cerrar sesión
+              </button>
+            </div>
           </li>
         </ng-container>
       </ul>
@@ -78,6 +142,7 @@
     <router-outlet></router-outlet>
   </main>
 
+  <!-- FOOTER -->
   <footer class="bg-dark text-white text-center py-3">
     © 2025 Hilton Hotels & Resort — Todos los derechos reservados
   </footer>

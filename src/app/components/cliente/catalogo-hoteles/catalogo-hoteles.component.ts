@@ -6,17 +6,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-catalogo-hoteles',
   templateUrl: './catalogo-hoteles.component.html',
-  styleUrls: ['./catalogo-hoteles.component.css']
+  styleUrls: ['./catalogo-hoteles.component.css'],
 })
 export class CatalogoHotelesComponent implements OnInit {
-
   hoteles: Hotel[] = [];
   filtro: string = '';
 
-  constructor(
-    private hotelesService: HotelesService,
-    private router: Router
-  ) {}
+  constructor(private hotelesService: HotelesService, private router: Router) {}
 
   ngOnInit(): void {
     this.hoteles = this.hotelesService.obtenerHoteles();
@@ -24,14 +20,15 @@ export class CatalogoHotelesComponent implements OnInit {
 
   verHabitaciones(hotelId: number) {
     this.router.navigate(['/cliente/habitaciones'], {
-      queryParams: { hotelId }
+      queryParams: { hotelId },
     });
   }
 
   get hotelesFiltrados(): Hotel[] {
-    return this.hoteles.filter(h =>
-      h.nombre.toLowerCase().includes(this.filtro.toLowerCase()) ||
-      h.ubicacion.toLowerCase().includes(this.filtro.toLowerCase())
+    return this.hoteles.filter(
+      (h) =>
+        h.nombre.toLowerCase().includes(this.filtro.toLowerCase()) ||
+        h.ubicacion.toLowerCase().includes(this.filtro.toLowerCase())
     );
   }
 }

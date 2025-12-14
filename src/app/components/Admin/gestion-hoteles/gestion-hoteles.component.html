@@ -2,13 +2,12 @@
   <h2 class="text-center mb-4">Gestión de Hoteles</h2>
 
   <div class="row">
-    <!-- SIDEBAR DE FILTROS (NUEVO) -->
+    <!-- SIDEBAR FILTROS -->
     <div class="col-md-3 mb-4">
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title">Filtros</h5>
 
-          <!-- FILTRO UBICACIÓN -->
           <label class="form-label">Ubicación</label>
           <select
             class="form-select mb-3"
@@ -16,10 +15,11 @@
             (change)="aplicarFiltros()"
           >
             <option value="">Todas</option>
-            <option *ngFor="let u of ubicaciones" [value]="u">{{ u }}</option>
+            <option *ngFor="let u of ubicaciones" [value]="u">
+              {{ u }}
+            </option>
           </select>
 
-          <!-- FILTRO CATEGORÍA -->
           <label class="form-label">Categoría</label>
           <select
             class="form-select mb-3"
@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- CONTENIDO -->
     <div class="col-md-9">
       <div class="d-flex justify-content-between mb-3">
         <input
@@ -58,11 +58,11 @@
           data-bs-target="#hotelModal"
           (click)="abrirModalAgregar()"
         >
-          <i class="bi bi-plus-circle me-1"></i> Añadir hotel
+          Añadir hotel
         </button>
       </div>
 
-      <!-- TABLA DE HOTELES -->
+      <!-- TABLA -->
       <div class="table-responsive shadow-sm">
         <table class="table table-hover table-bordered align-middle">
           <thead class="table-dark text-center">
@@ -82,7 +82,7 @@
 
               <td>
                 <button
-                  class="btn btn-link p-0 text-decoration-none"
+                  class="btn btn-link p-0"
                   (click)="verHabitacionesHotel(h.id)"
                 >
                   {{ h.nombre }}
@@ -90,33 +90,31 @@
               </td>
 
               <td>{{ h.ubicacion }}</td>
-
               <td class="text-center">{{ h.categoria }} ★</td>
-
               <td class="text-center">{{ h.habitaciones }}</td>
 
               <td class="text-center">
                 <button
                   class="btn btn-warning btn-sm me-2"
-                  (click)="abrirModalEditar(h)"
                   data-bs-toggle="modal"
                   data-bs-target="#hotelModal"
+                  (click)="abrirModalEditar(h)"
                 >
-                  <i class="bi bi-pencil-square"></i> Editar
+                  Editar
                 </button>
 
                 <button
                   class="btn btn-danger btn-sm"
                   (click)="eliminarHotel(h.id)"
                 >
-                  <i class="bi bi-trash"></i> Eliminar
+                  Eliminar
                 </button>
               </td>
             </tr>
 
             <tr *ngIf="hotelesFiltrados.length === 0">
               <td colspan="6" class="text-center text-muted">
-                No hay hoteles que coincidan con los filtros.
+                No hay hoteles que coincidan con los filtros
               </td>
             </tr>
           </tbody>
@@ -125,77 +123,203 @@
     </div>
   </div>
 
-  <!-- SE MANTIENE EXACTAMENTE IGUAL AL TUYO -->
-
-  <div
-    class="modal fade"
-    id="hotelModal"
-    tabindex="-1"
-    aria-labelledby="hotelModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
+  <!-- MODAL -->
+  <div class="modal fade" id="hotelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <form [formGroup]="formHotel" (ngSubmit)="guardarHotel()">
           <div class="modal-header">
-            <h5 class="modal-title" id="hotelModalLabel">
-              {{ editando ? "Editar Hotel" : "Añadir Hotel" }}
+            <h5 class="modal-title">
+              {{ editando ? "Editar hotel" : "Añadir hotel" }}
             </h5>
             <button
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
-              (click)="cancelarEdicion()"
             ></button>
           </div>
 
           <div class="modal-body">
-            <!-- TUS CAMPOS ORIGINALES → SIN CAMBIOS -->
+            <!-- NOMBRE -->
             <div class="mb-3">
-              <label class="form-label">Nombre del hotel</label>
+              <label class="form-label">Nombre</label>
               <input
                 type="text"
-                formControlName="nombre"
                 class="form-control"
-                placeholder="Ej: Hilton Arica"
+                formControlName="nombre"
               />
+
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  formHotel.get('nombre')?.touched &&
+                  formHotel.get('nombre')?.invalid
+                "
+              >
+                <div *ngIf="formHotel.get('nombre')?.errors?.['required']">
+                  El nombre es obligatorio
+                </div>
+
+                <div *ngIf="formHotel.get('nombre')?.errors?.['minlength']">
+                  El nombre debe tener al menos 3 caracteres
+                </div>
+
+                <div *ngIf="formHotel.get('nombre')?.errors?.['maxlength']">
+                  El nombre no puede superar los 50 caracteres
+                </div>
+              </div>
             </div>
 
+            <!-- UBICACIÓN -->
             <div class="mb-3">
               <label class="form-label">Ubicación</label>
-              <input
-                type="text"
-                formControlName="ubicacion"
-                class="form-control"
-                placeholder="Ej: Arica Norte"
-              />
+              <select class="form-select" formControlName="ubicacion">
+                <option value="">Seleccione una ubicación</option>
+                <option *ngFor="let u of ubicacionesDisponibles" [value]="u">
+                  {{ u }}
+                </option>
+              </select>
+
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  formHotel.get('ubicacion')?.touched &&
+                  formHotel.get('ubicacion')?.invalid
+                "
+              >
+                La ubicación es obligatoria
+              </div>
             </div>
 
+            <!-- CATEGORÍA -->
             <div class="mb-3">
-              <label class="form-label">Categoría (1-5)</label>
-              <input
-                type="number"
-                formControlName="categoria"
-                min="1"
-                max="5"
-                class="form-control"
-              />
+              <label class="form-label">Categoría</label>
+              <select class="form-select" formControlName="categoria">
+                <option *ngFor="let c of [1, 2, 3, 4, 5]" [value]="c">
+                  {{ c }} estrellas
+                </option>
+              </select>
             </div>
 
+            <!-- HABITACIONES -->
             <div class="mb-3">
               <label class="form-label">Habitaciones</label>
               <input
                 type="number"
+                class="form-control"
                 formControlName="habitaciones"
                 min="1"
-                class="form-control"
+                step="1"
               />
+
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  formHotel.get('habitaciones')?.touched &&
+                  formHotel.get('habitaciones')?.invalid
+                "
+              >
+                Debe ser un número mayor o igual a 1
+              </div>
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+              <textarea
+                class="form-control"
+                rows="4"
+                formControlName="descripcion"
+              ></textarea>
+
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  formHotel.get('descripcion')?.touched &&
+                  formHotel.get('descripcion')?.invalid
+                "
+              >
+                <div *ngIf="formHotel.get('descripcion')?.errors?.['required']">
+                  La descripción es obligatoria
+                </div>
+
+                <div
+                  *ngIf="formHotel.get('descripcion')?.errors?.['minlength']"
+                >
+                  La descripción debe tener al menos 20 caracteres
+                </div>
+
+                <div
+                  *ngIf="formHotel.get('descripcion')?.errors?.['maxlength']"
+                >
+                  La descripción no puede superar los 500 caracteres
+                </div>
+              </div>
+            </div>
+
+            <!-- MAPA -->
+            <div class="mb-3">
+              <label class="form-label">URL del mapa (Google Maps Embed)</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="mapaUrl"
+                placeholder="https://www.google.com/maps/embed?pb=..."
+              />
+
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  formHotel.get('mapaUrl')?.touched &&
+                  formHotel.get('mapaUrl')?.invalid
+                "
+              >
+                <div *ngIf="formHotel.get('mapaUrl')?.errors?.['required']">
+                  El mapa es obligatorio
+                </div>
+
+                <div *ngIf="formHotel.get('mapaUrl')?.errors?.['pattern']">
+                  Debe ser un enlace válido de Google Maps (Embed)
+                </div>
+              </div>
+
+              <!-- AYUDA VISUAL -->
+              <small class="text-muted">
+                En Google Maps → Compartir → Insertar un mapa → Copiar HTML →
+                pegar solo la URL del atributo <code>src</code>
+              </small>
+            </div>
+
+            <!-- IMÁGENES -->
+            <div class="mb-3">
+              <label class="form-label"> Imágenes del hotel (mínimo 4) </label>
+
+              <input
+                type="file"
+                class="form-control"
+                multiple
+                accept="image/*"
+                (change)="onImagenesSeleccionadas($event)"
+              />
+
+              <div *ngIf="imagenesError" class="text-danger mt-1">
+                {{ imagenesError }}
+              </div>
+
+              <div class="row mt-2" *ngIf="imagenesPreview.length > 0">
+                <div class="col-3" *ngFor="let img of imagenesPreview">
+                  <img [src]="img" class="img-fluid rounded border" />
+                </div>
+              </div>
             </div>
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
               Cancelar
             </button>
 
@@ -205,7 +329,7 @@
               [disabled]="formHotel.invalid"
               data-bs-dismiss="modal"
             >
-              {{ editando ? "Guardar Cambios" : "Agregar Hotel" }}
+              {{ editando ? "Guardar cambios" : "Agregar hotel" }}
             </button>
           </div>
         </form>

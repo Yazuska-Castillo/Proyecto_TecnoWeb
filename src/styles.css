@@ -8,3 +8,32 @@ body {
 .bg-navbar {
   background-color: #2c2f33 !important;
 }
+
+.dropdown-menu {
+  background-color: #2c2f33;
+  border: 1px solid #000000;
+}
+
+.dropdown-menu .dropdown-item {
+  color: #fff;
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+  background-color: #2c2f33;
+  color: #fff;
+}
+
+.dropdown-menu .dropdown-divider {
+  border-color: #5d5d5d;
+}
+
+.dark-theme {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+.dark-theme .card {
+  background-color: #1e1e1e;
+  color: white;
+}

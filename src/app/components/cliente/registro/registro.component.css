@@ -28,6 +28,7 @@ body {
 /* Contenedor de cada campo */
 .form-nombre,
 .form-usuario,
+.form-email,
 .form-contraseña,
 .form-confirm {
   position: relative;
@@ -41,6 +42,7 @@ body {
 .form-nombre label,
 .form-usuario label,
 .form-contraseña label,
+.form-email label,
 .form-confirm label {
   position: absolute;
   top: 36%;
@@ -59,6 +61,7 @@ body {
 /* Estilo de los inputs */
 .form-nombre input,
 .form-usuario input,
+.form-email input,
 .form-contraseña input,
 .form-confirm input {
   background: transparent;
@@ -72,6 +75,8 @@ body {
 .form-nombre input:valid ~ label,
 .form-usuario input:focus ~ label,
 .form-usuario input:valid ~ label,
+.form-email input:focus ~ label,
+.form-email input:valid ~ label,
 .form-contraseña input:focus ~ label,
 .form-contraseña input:valid ~ label,
 .form-confirm input:focus ~ label,
@@ -90,4 +95,11 @@ body {
   border-radius: 25px;
   font-size: 18px;
   color: white;
+}
+/* Errores */
+.error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: 5px;
+  display: block;
 }

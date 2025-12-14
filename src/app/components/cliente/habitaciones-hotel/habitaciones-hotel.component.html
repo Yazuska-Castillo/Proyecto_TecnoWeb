@@ -37,7 +37,7 @@
 
   <!-- ⭐ NUEVO: Mensaje si no hay habitaciones -->
   <div *ngIf="habitaciones.length === 0" class="alert alert-warning">
-    ⚠️ No hay habitaciones disponibles para las fechas seleccionadas.
+    ⚠️ No hay habitaciones disponibles
   </div>
 
   <!-- Lista de habitaciones -->
@@ -49,9 +49,7 @@
           <p>N° {{ r.number }}</p>
 
           <!-- Sin promoción activa -->
-          <p *ngIf="!promoActiva">
-            💲 {{ r.pricePerNight }} / noche
-          </p>
+          <p *ngIf="!promoActiva">💲 {{ r.pricePerNight }} / noche</p>
 
           <!-- Con promoción activa -->
           <div *ngIf="promoActiva">

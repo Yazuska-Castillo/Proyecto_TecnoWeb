@@ -1,36 +1,45 @@
 import { Injectable } from '@angular/core';
 import { Hotel } from '../models/hotel';
 import { HOTELES_PREDEFINIDOS } from 'src/data/hoteles-predefinidos';
+import { CryptoService } from './crypto.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HotelesService {
-  private key = 'hoteles';
+  private key = 'hoteles_encriptados';
 
   constructor() {
-    // Carga inicial si no existe en localStorage
+    // Carga inicial SOLO una vez (encriptada)
     if (!localStorage.getItem(this.key)) {
-      localStorage.setItem(this.key, JSON.stringify(HOTELES_PREDEFINIDOS));
+      const encrypted = CryptoService.encrypt(HOTELES_PREDEFINIDOS);
+      localStorage.setItem(this.key, encrypted);
     }
   }
 
-  // Obtener lista de hoteles
+  // Obtener lista de hoteles (DESENCRIPTADO)
   obtenerHoteles(): Hotel[] {
     const data = localStorage.getItem(this.key);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+
+    try {
+      return CryptoService.decrypt(data);
+    } catch (error) {
+      console.error('Error al desencriptar hoteles', error);
+      return [];
+    }
   }
 
-  // Guardar lista completa
+  // Guardar lista completa (ENCRIPTADO)
   guardarHoteles(hoteles: Hotel[]): void {
-    localStorage.setItem(this.key, JSON.stringify(hoteles));
+    const encrypted = CryptoService.encrypt(hoteles);
+    localStorage.setItem(this.key, encrypted);
   }
 
   // Agregar un nuevo hotel
   agregarHotel(hotel: Hotel): void {
     const hoteles = this.obtenerHoteles();
 
-    // Generar ID
     hotel.id =
       hoteles.length > 0 ? Math.max(...hoteles.map((h) => h.id)) + 1 : 1;
 

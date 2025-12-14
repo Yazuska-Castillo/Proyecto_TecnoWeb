@@ -1,0 +1,86 @@
+<div class="config-container">
+  <h2>Configuración</h2>
+
+  <div class="menu">
+    <button
+      class="btn"
+      [class.activo]="seccion === 'perfil'"
+      (click)="cambiarSeccion('perfil')"
+    >
+      Mi perfil
+    </button>
+
+    <button
+      class="btn"
+      [class.activo]="seccion === 'ajustes'"
+      (click)="cambiarSeccion('ajustes')"
+    >
+      Ajustes
+    </button>
+  </div>
+
+  <!-- PERFIL -->
+  <div *ngIf="seccion === 'perfil'" class="card">
+    <h4>Mi perfil</h4>
+
+    <div class="info-usuario">
+      <p><strong>Nombre:</strong> {{ usuario.nombre }}</p>
+      <p><strong>Correo:</strong> {{ usuario.email }}</p>
+    </div>
+
+    <hr />
+
+    <h4>Cambiar contraseña</h4>
+
+    <input
+      type="password"
+      placeholder="Contraseña actual"
+      [(ngModel)]="passwordActual"
+    />
+
+    <input
+      type="password"
+      placeholder="Nueva contraseña"
+      [(ngModel)]="nuevaPassword"
+    />
+
+    <input
+      type="password"
+      placeholder="Confirmar nueva contraseña"
+      [(ngModel)]="confirmarPassword"
+    />
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+    <div class="exito" *ngIf="exito">{{ exito }}</div>
+
+    <button class="btn btn-primary w-100" (click)="cambiarPassword()">
+      Cambiar contraseña
+    </button>
+
+    <hr />
+
+    <button class="btn btn-danger w-100" (click)="eliminarCuenta()">
+      Eliminar cuenta
+    </button>
+  </div>
+
+  <!-- AJUSTES -->
+  <div *ngIf="seccion === 'ajustes'" class="card">
+    <h4>Ajustes de la aplicación</h4>
+
+    <div class="form-check form-switch mt-3">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        id="temaSwitch"
+        [(ngModel)]="temaOscuro"
+        (change)="toggleTema()"
+      />
+      <label class="form-check-label" for="temaSwitch"> Tema oscuro </label>
+    </div>
+
+    <p class="mt-3 text-muted">Preferencia guardada automáticamente</p>
+
+    <p class="text-muted">Proyecto académico – Angular 15</p>
+  </div>
+</div>

@@ -24,11 +24,11 @@ export class HistorialReservasComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const usuario = this.auth.getUsuarioActual();
-    if (!usuario) return;
+    const email = this.auth.getEmailDesdeToken();
+    if (!email) return;
 
     const todas = this.reservasService.obtenerReservas();
-    this.reservas = todas.filter((r: any) => r.usuarioEmail === usuario.email);
+    this.reservas = todas.filter((r: any) => r.usuarioEmail === email);
   }
 
   // =====================================================
@@ -66,8 +66,8 @@ export class HistorialReservasComponent implements OnInit {
     alert('Fechas modificadas correctamente ✔');
     this.modalRef.hide();
 
-    const usuario = this.auth.getUsuarioActual();
-    this.reservas = nuevas.filter((r: any) => r.usuarioEmail === usuario.email);
+    const email = this.auth.getEmailDesdeToken();
+    this.reservas = nuevas.filter((r: any) => r.usuarioEmail === email);
   }
 
   // =====================================================
@@ -79,18 +79,19 @@ export class HistorialReservasComponent implements OnInit {
     reserva.estado = 'Cancelada';
 
     // Liberar habitación
-    this.roomsService.actualizarEstadoHabitacion(reserva.habitacionId, 'Disponible');
+    this.roomsService.actualizarEstadoHabitacion(
+      reserva.habitacionId,
+      'Disponible'
+    );
 
     const todas = this.reservasService.obtenerReservas();
-    const nuevas = todas.map((r: any) =>
-      r.id === reserva.id ? reserva : r
-    );
+    const nuevas = todas.map((r: any) => (r.id === reserva.id ? reserva : r));
 
     this.reservasService.guardarReservas(nuevas);
 
     alert('Reserva cancelada ✔');
 
-    const usuario = this.auth.getUsuarioActual();
-    this.reservas = nuevas.filter((r: any) => r.usuarioEmail === usuario.email);
+    const email = this.auth.getEmailDesdeToken();
+    this.reservas = nuevas.filter((r: any) => r.usuarioEmail === email);
   }
 }
