@@ -1,3 +1,21 @@
+Proyecto desarrollado en Angular 15, que simula un sistema de gestión hotelera para una franquicia de hoteles.
+Permite a clientes buscar hoteles, reservar habitaciones y gestionar sus reservas, y a administradores gestionar hoteles, habitaciones y promociones.
+
+Tecnologías utilizadas
+Angular 15
+TypeScript
+Bootstrap 5
+CryptoJS (hash y cifrado)
+LocalStorage / SessionStorage
+Angular Router
+Guards de autenticación y autorización
+
+1. Instalar dependencias
+   `npm install`
+3. Ejecutar servidor de desarrollo
+   `ng serve` o `ng s`
+
+Cómo ejecutar el proyecto  
 # ProyectoTecnoWeb
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.11.
@@ -25,3 +43,4 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
