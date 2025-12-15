@@ -55,6 +55,19 @@ export class GestionPromocionesComponent {
       this.errores.push('La fecha hasta no puede ser anterior a desde.');
     }
 
+    const solapada = this.promociones.some(p =>
+      p.id !== this.editandoId && // ignora la promo que se está editando
+      p.nombre.toLowerCase() === nombreLimpio.toLowerCase() &&
+      !(this.hasta < p.desde || this.desde > p.hasta)
+    );
+
+    if (solapada) {
+      this.errores.push('Ya existe una promoción con el mismo nombre en ese período.'
+      );
+    }
+
+    
+
     if (this.errores.length) return;
 
     if (this.editandoId) {
