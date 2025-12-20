@@ -290,26 +290,84 @@
               </small>
             </div>
 
-            <!-- IMÁGENES -->
+            <!-- Imagenes -->
             <div class="mb-3">
-              <label class="form-label"> Imágenes del hotel (mínimo 4) </label>
+              <label class="form-label">
+                Imágenes del hotel <span class="text-danger">*</span>
+              </label>
 
+              <!-- Input para seleccionar imágenes -->
               <input
                 type="file"
                 class="form-control"
                 multiple
                 accept="image/*"
                 (change)="onImagenesSeleccionadas($event)"
+                [disabled]="editando && imagenesPreview.length >= 10"
               />
 
-              <div *ngIf="imagenesError" class="text-danger mt-1">
-                {{ imagenesError }}
+              <small class="text-muted">
+                Mínimo 4 imágenes, máximo 10 (formatos: JPG, PNG, WebP, máximo 5MB cada una)
+              </small>
+
+              <!-- Mensaje de error -->
+              <div *ngIf="imagenesError" class="alert alert-danger mt-2 py-2">
+                <i class="bi bi-exclamation-triangle"></i> {{ imagenesError }}
               </div>
 
-              <div class="row mt-2" *ngIf="imagenesPreview.length > 0">
-                <div class="col-3" *ngFor="let img of imagenesPreview">
-                  <img [src]="img" class="img-fluid rounded border" />
+              <!-- Imagenes existentes solo editar -->
+              <div class="row mt-3 g-2" *ngIf="editando && (hotelSeleccionado?.imagenes?.length || 0) > 0">
+                <div class="col-4 col-md-3" *ngFor="let img of hotelSeleccionado?.imagenes || []; let i = index">
+                  <div class="position-relative">
+                    <img [src]="img" 
+                         class="img-fluid rounded border" 
+                         style="height: 100px; object-fit: cover; width: 100%;" />
+                    <button type="button" 
+                            class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                            style="width: 24px; height: 24px; padding: 0;"
+                            (click)="eliminarImagenExistente(i)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                    <small class="position-absolute bottom-0 start-0 m-1 bg-white px-1 rounded border">Existente</small>
+                  </div>
                 </div>
+              </div>
+
+              <!-- Preview de Imagenes -->
+              <div class="row mt-3 g-2" *ngIf="imagenesPreview.length > 0">
+                <div class="col-4 col-md-3" *ngFor="let img of imagenesPreview; let i = index">
+                  <div class="position-relative">
+                    <img [src]="img" 
+                         class="img-fluid rounded border" 
+                         style="height: 100px; object-fit: cover; width: 100%;" />
+                    <button type="button" 
+                            class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                            style="width: 24px; height: 24px; padding: 0;"
+                            (click)="eliminarImagenPreview(i)">
+                      <i class="bi bi-x"></i>
+                    </button>
+                    <small *ngIf="editando" class="position-absolute bottom-0 start-0 m-1 bg-light px-1 rounded">Nueva</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contador -->
+              <div class="mt-2">
+                <small class="text-muted">
+                  <i class="bi bi-check-circle text-success"></i> 
+                  Total: {{ (editando ? hotelSeleccionado?.imagenes?.length || 0 : 0) + imagenesPreview.length }} imagen(es)
+                  <span *ngIf="editando">
+                    ({{ hotelSeleccionado?.imagenes?.length || 0 }} existentes + {{ imagenesPreview.length }} nuevas)
+                  </span>
+                </small>
+              </div>
+
+              <!-- Mensaje si no hay imagenes -->
+              <div class="text-center py-3 border rounded bg-light mt-2" 
+                  *ngIf="(!editando && imagenesPreview.length === 0) || 
+                        (editando && (!hotelSeleccionado?.imagenes || (hotelSeleccionado?.imagenes?.length || 0) === 0) && imagenesPreview.length === 0)">
+                <i class="bi bi-images text-muted fs-4 d-block mb-2"></i>
+                <small class="text-muted">No hay imágenes cargadas</small>
               </div>
             </div>
           </div>
@@ -319,6 +377,7 @@
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
+              (click)="cancelarEdicion()"
             >
               Cancelar
             </button>
@@ -326,9 +385,8 @@
             <button
               type="submit"
               class="btn btn-primary"
-              [disabled]="formHotel.invalid"
-              data-bs-dismiss="modal"
-            >
+              [disabled]="formHotel.invalid || (!editando && imagenesPreview.length < 4) || (editando && ((hotelSeleccionado?.imagenes?.length || 0) + imagenesPreview.length) < 4)"
+              data-bs-dismiss="modal">
               {{ editando ? "Guardar cambios" : "Agregar hotel" }}
             </button>
           </div>

@@ -39,21 +39,59 @@
         Límite de {{ limiteHabitaciones }} habitaciones alcanzado.
       </div>
 
+      <!-- N° Habitacion -->
       <form #roomForm="ngForm">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label">Número</label>
-            <input type="text" class="form-control" [(ngModel)]="nuevaHabitacion.number" 
-                   name="number" required placeholder="101, 202...">
+            <label class="form-label">Número <span class="text-danger">*</span></label>
+            <input type="text" 
+                   class="form-control" 
+                   [(ngModel)]="nuevaHabitacion.number" 
+                   name="number" 
+                   required
+                   pattern="^[0-9]+$"
+                   placeholder="101, 202..."
+                   #numberInput="ngModel"
+                   (blur)="onBlurNumero()" 
+                   [class.is-invalid]="getErrorNumeroRepetido()">
+            
+            <!-- Mensajes de error para el número -->
+            <div *ngIf="numberInput.touched || roomForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="numberInput.errors?.['required']">
+                ⚠️ El número de habitación es obligatorio
+              </div>
+              <div *ngIf="numberInput.errors?.['pattern']">
+                ⚠️ Solo se permiten números (ej: 101, 202)
+              </div>
+              
+              <!-- Agrega error de número repetido -->
+              <div *ngIf="getErrorNumeroRepetido()" class="mt-1">
+                {{ getErrorNumeroRepetido() }}
+              </div>
+            </div>
+            <small class="text-muted">Solo números (ej: 101, 202, 305)</small>
           </div>
+          
+          <!-- Tipo Habitacion -->
           <div class="col-md-6 mb-3">
-            <label class="form-label">Tipo</label>
-            <select class="form-select" [(ngModel)]="nuevaHabitacion.type" name="type" required>
+            <label class="form-label">Tipo <span class="text-danger">*</span></label>
+            <select class="form-select" 
+                    [(ngModel)]="nuevaHabitacion.type" 
+                    name="type" 
+                    required
+                    #typeInput="ngModel">
               <option value="">Seleccionar tipo</option>
               <option value="Standard">Standard</option>
               <option value="Deluxe">Deluxe</option>
               <option value="Suite">Suite</option>
             </select>
+            
+            <!-- Mensaje de error para el tipo -->
+            <div *ngIf="typeInput.touched || roomForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="typeInput.errors?.['required']">
+                ⚠️ El tipo de habitación es obligatorio
+              </div>
+            </div>
           </div>
         </div>
 
@@ -65,40 +103,154 @@
             </div>
           </div>
           
+          <!-- Precio -->
           <div class="col-md-6 mb-3">
-            <label class="form-label">Precio/Noche ($)</label>
-            <input type="number" class="form-control" [(ngModel)]="nuevaHabitacion.pricePerNight" 
-                   name="price" required min="1" placeholder="120">
+            <label class="form-label">Precio/Noche ($) <span class="text-danger">*</span></label>
+            <input type="number" 
+                   class="form-control" 
+                   [(ngModel)]="nuevaHabitacion.pricePerNight" 
+                   [value]="nuevaHabitacion.pricePerNight || ''"
+                   name="price" 
+                   required 
+                   min="1"
+                   placeholder="120"
+                   #priceInput="ngModel">
+            
+            <!-- Mensajes de error para el precio -->
+            <div *ngIf="priceInput.touched || roomForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="priceInput.errors?.['required']">
+                ⚠️ El precio es obligatorio
+              </div>
+              <div *ngIf="priceInput.errors?.['min']">
+                ⚠️ El precio debe ser mayor a 0
+              </div>
+            </div>
           </div>
         </div>
 
+        <!-- Capacidad -->
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label">Capacidad</label>
-            <select class="form-select" [(ngModel)]="nuevaHabitacion.capacity" name="capacity" required>
+            <label class="form-label">Capacidad <span class="text-danger">*</span></label>
+            <select class="form-select" 
+                    [(ngModel)]="nuevaHabitacion.capacity" 
+                    name="capacity" 
+                    required
+                    #capacityInput="ngModel">
               <option value="">Seleccionar</option>
               <option value="1">1 persona</option>
               <option value="2">2 personas</option>
               <option value="3">3 personas</option>
               <option value="4">4 personas</option>
             </select>
+            
+            <!-- Mensaje de error para la capacidad -->
+            <div *ngIf="capacityInput.touched || roomForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="capacityInput.errors?.['required']">
+                ⚠️ La capacidad es obligatoria
+              </div>
+            </div>
           </div>
+
+          <!-- Estado -->
           <div class="col-md-6 mb-3">
-            <label class="form-label">Estado</label>
-            <select class="form-select" [(ngModel)]="nuevaHabitacion.status" name="status" required>
+            <label class="form-label">Estado <span class="text-danger">*</span></label>
+            <select class="form-select" 
+                    [(ngModel)]="nuevaHabitacion.status" 
+                    name="status" 
+                    required
+                    #statusInput="ngModel">
               <option value="Disponible">Disponible</option>
               <option value="Ocupada">Ocupada</option>
               <option value="Mantenimiento">Mantenimiento</option>
             </select>
           </div>
         </div>
+
+        <!-- Descripción -->
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control" 
+                      [(ngModel)]="nuevaHabitacion.description" 
+                      name="description" 
+                      rows="3" 
+                      required
+                      minlength="10"
+                      placeholder="Describa características, vistas, comodidades..."
+                      #descriptionInput="ngModel">
+            </textarea>
+            
+            <!-- Mensajes de error para la descripción -->
+            <div *ngIf="descriptionInput.touched || roomForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="descriptionInput.errors?.['required']">
+                ⚠️ La descripción es obligatoria
+              </div>
+              <div *ngIf="descriptionInput.errors?.['minlength']">
+                ⚠️ La descripción debe tener al menos 10 caracteres
+              </div>
+            </div>
+            <small class="text-muted">Mínimo 10 caracteres</small>
+          </div>
+        </div>
+
+        <!-- Imágenes -->
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label">Imágenes de la habitación <span class="text-danger">*</span></label>
+            
+            <input
+              type="file"
+              class="form-control"
+              multiple
+              accept="image/*"
+              (change)="onImagenesSeleccionadas($event)"
+            />
+            
+            <small class="text-muted">Seleccione al menos 1 imagen (formatos: JPG, PNG, WebP, máximo 5MB cada una)</small>
+            
+            <div *ngIf="imagenesError" class="alert alert-danger mt-2 py-2">
+              <i class="bi bi-exclamation-triangle"></i> {{ imagenesError }}
+            </div>
+
+            <!-- Preview de imágenes seleccionadas -->
+            <div class="row mt-3 g-2" *ngIf="imagenesPreview.length > 0">
+              <div class="col-4 col-md-3" *ngFor="let img of imagenesPreview; let i = index">
+                <div class="position-relative">
+                  <img [src]="img" class="img-fluid rounded border" style="height: 100px; object-fit: cover; width: 100%;" />
+                  <button type="button" 
+                          class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                          style="width: 24px; height: 24px; padding: 0;"
+                          (click)="eliminarImagenPreview(i)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Contador -->
+            <div class="mt-2" *ngIf="imagenesPreview.length > 0">
+              <small class="text-muted">
+                <i class="bi bi-check-circle text-success"></i> 
+                {{ imagenesPreview.length }} imagen(es) seleccionada(s)
+              </small>
+            </div>
+            
+            <!-- Error de imágenes si no hay ninguna -->
+            <div *ngIf="roomForm.submitted && imagenesPreview.length === 0" class="alert alert-danger mt-2 py-2">
+              <i class="bi bi-exclamation-triangle"></i> Debe seleccionar al menos 1 imagen
+            </div>
+          </div>
+        </div>
       </form>
     </div>
+
+    <!-- Validacion para guardar -->
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
       <button type="button" class="btn btn-success" 
               (click)="agregarHabitacion()"
-              [disabled]="!roomForm.valid || !habilitarAgregar">
+              [disabled]="!roomForm.valid || !habilitarAgregar || imagenesPreview.length === 0 || getErrorNumeroRepetido()">
         Guardar
       </button>
     </div>
@@ -111,23 +263,61 @@
       <button type="button" class="btn-close" (click)="cancelar()"></button>
     </div>
     <div class="modal-body">
+
+      <!-- N° Habitacion -->
       <form #editForm="ngForm">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label">Número</label>
-            <input type="text" class="form-control" [(ngModel)]="habitacionEditando.number" 
-                   name="editNumber" required>
-          </div>
+            <label class="form-label">Número <span class="text-danger">*</span></label>
+            <input type="text" 
+                   class="form-control" 
+                   [(ngModel)]="habitacionEditando.number" 
+                   name="editNumber" 
+                   required
+                   pattern="^[0-9]+$"
+                   #editNumberInput="ngModel"
+                   (blur)="onBlurNumero()"
+                   [class.is-invalid]="getErrorNumeroRepetido()">
+            
+              <!-- Mensajes de error para el número -->
+              <div *ngIf="editNumberInput.touched || editForm.submitted" class="text-danger small mt-1">
+                <div *ngIf="editNumberInput.errors?.['required']">
+                  ⚠️ El número de habitación es obligatorio
+                </div>
+                <div *ngIf="editNumberInput.errors?.['pattern']">
+                  ⚠️ Solo se permiten números (ej: 101, 202)
+                </div>
+                
+                <!-- Agrega error de número repetido -->
+                <div *ngIf="getErrorNumeroRepetidoEdicion()" class="mt-1">
+                  {{ getErrorNumeroRepetidoEdicion() }}
+                </div>
+              </div>
+            </div>
+          
+          <!-- Tipo -->
           <div class="col-md-6 mb-3">
-            <label class="form-label">Tipo</label>
-            <select class="form-select" [(ngModel)]="habitacionEditando.type" name="editType" required>
+            <label class="form-label">Tipo <span class="text-danger">*</span></label>
+            <select class="form-select" 
+                    [(ngModel)]="habitacionEditando.type" 
+                    name="editType" 
+                    required
+                    #editTypeInput="ngModel">
               <option value="Standard">Standard</option>
               <option value="Deluxe">Deluxe</option>
               <option value="Suite">Suite</option>
             </select>
+            
+            <!-- Mensaje de error para el tipo -->
+            <div *ngIf="editTypeInput.touched || editForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="editTypeInput.errors?.['required']">
+                ⚠️ El tipo de habitación es obligatorio
+              </div>
+            </div>
           </div>
         </div>
 
+        <!-- Hotel -->
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Hotel</label>
@@ -136,39 +326,167 @@
             </div>
           </div>
           
+          <!-- Precio -->
           <div class="col-md-6 mb-3">
-            <label class="form-label">Precio/Noche ($)</label>
-            <input type="number" class="form-control" [(ngModel)]="habitacionEditando.pricePerNight" 
-                   name="editPrice" required min="1">
+            <label class="form-label">Precio/Noche ($) <span class="text-danger">*</span></label>
+            <input type="number" 
+                   class="form-control" 
+                   [(ngModel)]="habitacionEditando.pricePerNight" 
+                   [value]="nuevaHabitacion.pricePerNight || ''"
+                   name="editPrice" 
+                   required 
+                   min="1"
+                   #editPriceInput="ngModel">
+            
+            <!-- Mensajes de error para el precio -->
+            <div *ngIf="editPriceInput.touched || editForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="editPriceInput.errors?.['required']">
+                ⚠️ El precio es obligatorio
+              </div>
+              <div *ngIf="editPriceInput.errors?.['min']">
+                ⚠️ El precio debe ser mayor a 0
+              </div>
+            </div>
           </div>
         </div>
 
+        <!-- Capacidad -->
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label">Capacidad</label>
-            <select class="form-select" [(ngModel)]="habitacionEditando.capacity" name="editCapacity" required>
+            <label class="form-label">Capacidad <span class="text-danger">*</span></label>
+            <select class="form-select" 
+                    [(ngModel)]="habitacionEditando.capacity" 
+                    name="editCapacity" 
+                    required
+                    #editCapacityInput="ngModel">
               <option value="1">1 persona</option>
               <option value="2">2 personas</option>
               <option value="3">3 personas</option>
               <option value="4">4 personas</option>
             </select>
+            
+            <!-- Mensaje de error para la capacidad -->
+            <div *ngIf="editCapacityInput.touched || editForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="editCapacityInput.errors?.['required']">
+                ⚠️ La capacidad es obligatoria
+              </div>
+            </div>
           </div>
+          
+          <!-- Estado -->
           <div class="col-md-6 mb-3">
-            <label class="form-label">Estado</label>
-            <select class="form-select" [(ngModel)]="habitacionEditando.status" name="editStatus" required>
+            <label class="form-label">Estado <span class="text-danger">*</span></label>
+            <select class="form-select" 
+                    [(ngModel)]="habitacionEditando.status" 
+                    name="editStatus" 
+                    required
+                    #editStatusInput="ngModel">
               <option value="Disponible">Disponible</option>
               <option value="Ocupada">Ocupada</option>
               <option value="Mantenimiento">Mantenimiento</option>
             </select>
           </div>
         </div>
+
+        <!-- Descripción -->
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control" 
+                      [(ngModel)]="habitacionEditando.description" 
+                      name="editDescription" 
+                      rows="3" 
+                      required
+                      minlength="10"
+                      #editDescriptionInput="ngModel">
+            </textarea>
+            
+            <!-- Mensajes de error para la descripción -->
+            <div *ngIf="editDescriptionInput.touched || editForm.submitted" class="text-danger small mt-1">
+              <div *ngIf="editDescriptionInput.errors?.['required']">
+                ⚠️ La descripción es obligatoria
+              </div>
+              <div *ngIf="editDescriptionInput.errors?.['minlength']">
+                ⚠️ La descripción debe tener al menos 10 caracteres
+              </div>
+            </div>
+            <small class="text-muted">Mínimo 10 caracteres</small>
+          </div>
+        </div>
+
+        <!-- Imágenes -->
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label class="form-label">Imágenes de la habitación</label>
+            
+            <!-- Input para agregar nuevas imágenes -->
+            <input
+              type="file"
+              class="form-control mb-3"
+              multiple
+              accept="image/*"
+              (change)="onImagenesSeleccionadasEditar($event)"
+            />
+            
+            <!-- Imágenes existentes -->
+            <div class="row g-2" *ngIf="habitacionEditando.images && habitacionEditando.images.length > 0">
+              <div class="col-4 col-md-3" *ngFor="let img of habitacionEditando.images; let i = index">
+                <div class="position-relative">
+                  <img [src]="img" 
+                      class="img-fluid rounded border" 
+                      style="height: 100px; object-fit: cover; width: 100%;" />
+                  <button type="button" 
+                          class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                          style="width: 24px; height: 24px; padding: 0;"
+                          (click)="eliminarImagenExistente(i)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                  <small class="position-absolute bottom-0 start-0 m-1 bg-white px-1 rounded border">Existente</small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Preview de nuevas imágenes -->
+            <div class="row g-2 mt-3" *ngIf="imagenesPreviewEditar.length > 0">
+              <div class="col-4 col-md-3" *ngFor="let img of imagenesPreviewEditar; let i = index">
+                <div class="position-relative">
+                  <img [src]="img" 
+                      class="img-fluid rounded border" 
+                      style="height: 100px; object-fit: cover; width: 100%;" />
+                  <button type="button" 
+                          class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                          style="width: 24px; height: 24px; padding: 0;"
+                          (click)="eliminarImagenNueva(i)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                  <small class="position-absolute bottom-0 start-0 m-1 bg-light px-1 rounded">Nueva</small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Validación de imágenes en edición -->
+            <div *ngIf="editForm.submitted && habitacionEditando.images.length === 0 && imagenesPreviewEditar.length === 0" 
+                 class="alert alert-warning mt-2 py-2">
+              <i class="bi bi-exclamation-triangle"></i> La habitación no tiene imágenes
+            </div>
+            
+            <!-- Mensaje si no hay imágenes -->
+            <div class="text-center py-3 border rounded bg-light mt-2" 
+                *ngIf="(!habitacionEditando.images || habitacionEditando.images.length === 0) && imagenesPreviewEditar.length === 0">
+              <i class="bi bi-images text-muted fs-4 d-block mb-2"></i>
+              <small class="text-muted">No hay imágenes cargadas</small>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
+
+    <!-- Validacion para guardar-->
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
       <button type="button" class="btn btn-success" 
               (click)="actualizarHabitacion()"
-              [disabled]="!editForm.valid">
+              [disabled]="!editForm.valid || (habitacionEditando.images.length === 0 && imagenesPreviewEditar.length === 0) || getErrorNumeroRepetidoEdicion()">
         Guardar Cambios
       </button>
     </div>
