@@ -6,8 +6,8 @@ import { PROMOCIONES_PREDEFINIDAS } from 'src/data/promociones-predefinidas';
 @Injectable({ providedIn: 'root' })
 export class PromocionesService {
   private storageKey = 'promociones';
-  private _promos!: BehaviorSubject<Promo[]>;   // 👈 con "!"
-  promos$!: Observable<Promo[]>;                // 👈 se inicializa en el constructor
+  private _promos!: BehaviorSubject<Promo[]>;
+  promos$!: Observable<Promo[]>;
 
   constructor() {
     const guardadas = localStorage.getItem(this.storageKey);
@@ -24,7 +24,7 @@ export class PromocionesService {
     }
 
     this._promos = new BehaviorSubject<Promo[]>(base);
-    this.promos$ = this._promos.asObservable();   // 👈 AHORA sí existe _promos
+    this.promos$ = this._promos.asObservable();
   }
 
   get snapshot(): Promo[] {
@@ -48,10 +48,18 @@ export class PromocionesService {
     this.guardarEnLocalStorage(nuevas);
   }
 
+  update(id: number, cambios: Partial<Omit<Promo, 'id'>>) {
+    const nuevas = this.snapshot.map(p =>
+      p.id === id ? { ...p, ...cambios, id: p.id } : p
+    );
+    this._promos.next(nuevas);
+    this.guardarEnLocalStorage(nuevas);
+  }
+
   // ======== LÓGICA PARA EL CLIENTE ========
 
   getPromosActivas(fecha: Date = new Date()): Promo[] {
-    const hoy = fecha.toISOString().slice(0, 10); // YYYY-MM-DD
+    const hoy = fecha.toISOString().slice(0, 10); 
     return this.snapshot.filter(p => p.desde <= hoy && p.hasta >= hoy);
   }
 
