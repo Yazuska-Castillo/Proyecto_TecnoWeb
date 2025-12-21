@@ -19,9 +19,13 @@
       <span class="precio">
         ${{ precioPorNocheConPromo }}
       </span>
-      <span class="badge bg-success ms-1">
-        {{ promoActiva.nombre }}
+      <span class="badge bg-success ms-1" *ngIf="promoSeleccionada">
+        {{ promoSeleccionada.nombre }}
       </span>
+      <span class="badge bg-secondary ms-1" *ngIf="!promoSeleccionada && promoActiva">
+        Mejor disponible: {{ promoActiva.nombre }}
+      </span>
+
     </p>
 
     <p><b>Estado actual:</b> {{ habitacion.status }}</p>
@@ -33,14 +37,37 @@
   <div class="fechas">
     <label>
       Fecha de entrada:
-      <input type="date" [(ngModel)]="fechaEntrada" (change)="calcularTotal()">
+      <input type="date" [(ngModel)]="fechaEntrada" (change)="actualizarPromosYPrecio()">
     </label>
 
     <label>
       Fecha de salida:
-      <input type="date" [(ngModel)]="fechaSalida" (change)="calcularTotal()">
+      <input type="date" [(ngModel)]="fechaSalida" (change)="actualizarPromosYPrecio()">
     </label>
   </div>
+
+<!-- Selección de promoción -->
+<div class="mt-3" *ngIf="promosDisponibles && promosDisponibles.length > 0">
+  <label>
+    Promoción:
+    <select class="form-select" #sel (change)="seleccionarPromo(sel.value)">
+      <option value="">Sin promoción</option>
+      <option *ngFor="let p of promosDisponibles" [value]="p.id">
+        {{ p.nombre }} —
+        {{ p.tipo === 'porcentaje' ? (p.valor + '%') : ('$' + p.valor) }}
+      </option>
+    </select>
+  </label>
+
+  <small class="text-muted d-block mt-1">
+    Elige una promoción disponible para aplicarla al costo total.
+  </small>
+</div>
+
+<div class="mt-3 text-muted" *ngIf="promosDisponibles && promosDisponibles.length === 0">
+  No hay promociones disponibles por ahora.
+</div>
+
 
   <div class="total" *ngIf="total > 0">
     <h3>Total: <span class="precio">${{ total }}</span></h3>

@@ -16,6 +16,10 @@ export class ReservaClienteComponent implements OnInit {
   promoActiva: Promo | null = null;
   precioPorNocheConPromo!: number;
 
+  promosDisponibles: Promo[] = [];
+  promoSeleccionada: Promo | null = null;
+
+
   hotel!: string;
   habitacionId!: number;
   personas!: number;
@@ -44,22 +48,34 @@ export class ReservaClienteComponent implements OnInit {
       this.personas = +params['personas'];
     });
 
-    this.roomsService.getRooms().subscribe((rooms) => {
-      this.habitacion = rooms.find((r) => r.id === this.habitacionId);
+    this.promoActiva = this.promosService.getMejorPromo();
+    this.actualizarPromosYPrecio();
 
-      if (!this.habitacion) return;
-
-      this.promoActiva = this.promosService.getMejorPromo();
-
-      const base =
-        this.habitacion.pricePorNoche ?? this.habitacion.pricePerNight;
-
-      this.precioPorNocheConPromo =
-        this.promosService.calcularPrecioConPromo(base);
-
-      this.calcularTotal();
-    });
   }
+
+  actualizarPromosYPrecio() {
+  if (!this.habitacion) return;
+
+  const base =
+    this.habitacion.pricePorNoche ?? this.habitacion.pricePerNight;
+
+  this.promosDisponibles = this.promosService.getPromosActivas(new Date());
+
+  let precioFinal = base;
+
+  if (this.promoSeleccionada) {
+    if (this.promoSeleccionada.tipo === 'porcentaje') {
+      const desc = base * (this.promoSeleccionada.valor / 100);
+      precioFinal = Math.max(0, Math.round(base - desc));
+    } else {
+      precioFinal = Math.max(0, base - this.promoSeleccionada.valor);
+    }
+  }
+
+  this.precioPorNocheConPromo = precioFinal;
+  this.calcularTotal();
+}
+
 
   calcularTotal() {
     if (this.fechaEntrada && this.fechaSalida && this.habitacion) {
@@ -153,4 +169,19 @@ export class ReservaClienteComponent implements OnInit {
     alert('✔ Reserva realizada con éxito');
     this.router.navigate(['/cliente/historial']);
   }
+  
+  seleccionarPromo(promoId: string | null) {
+  if (!promoId) {
+    this.promoSeleccionada = null;
+  } else {
+    this.promoSeleccionada =
+      this.promosDisponibles.find((p: Promo) => p.id === +promoId) || null;
+  }
+
+  this.actualizarPromosYPrecio();
 }
+
+
+
+}
+
