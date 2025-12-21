@@ -1,14 +1,13 @@
 <h2>Historial de Reservas</h2>
 
-<div *ngIf="reservas.length === 0">
-  <p>No tienes reservas registradas.</p>
+<div *ngIf="reservasConfirmadas.length === 0">
+  <p>No tienes reservas activas.</p>
 </div>
 
-<div class="reserva" *ngFor="let r of reservas">
-
+<div class="reserva" *ngFor="let r of reservasConfirmadas">
   <h3>
     Habitación {{ r.numeroHabitacion }} — {{ r.tipoHabitacion }}
-    <br>
+    <br />
     <small class="text-muted">Hotel: {{ r.hotelNombre }}</small>
   </h3>
 
@@ -17,49 +16,83 @@
   <p><b>Precio:</b> ${{ r.precio }}</p>
 
   <p>
-    <b>Estado:</b>
-    <span [ngClass]="{
-      'text-success': r.estado === 'Confirmada',
-      'text-danger': r.estado === 'Cancelada'
-    }">
-      {{ r.estado }}
-    </span>
+    <b>Estado: </b>
+    <span class="text-success">{{ r.estado }}</span>
   </p>
 
-  <div class="acciones" *ngIf="r.estado === 'Confirmada'">
-    <button class="btn btn-primary me-2" (click)="modificar(r)">Modificar fecha</button>
-    <button class="btn btn-danger" (click)="cancelar(r)">Cancelar reserva</button>
-  </div>
+  <div class="acciones">
+    <button class="btn btn-primary me-2" (click)="modificar(r)">
+      Modificar fecha
+    </button>
 
+    <button class="btn btn-danger" (click)="cancelar(r)">
+      Cancelar reserva
+    </button>
+  </div>
 </div>
 
-<!-- =====================================================
-     MODAL BOOTSTRAP EDITAR FECHAS
-===================================================== -->
+<button
+  class="btn btn-outline-secondary mt-4"
+  *ngIf="reservasCanceladas.length > 0"
+  (click)="mostrarCanceladas = !mostrarCanceladas"
+>
+  {{
+    mostrarCanceladas
+      ? "Ocultar reservas canceladas"
+      : "Ver reservas canceladas"
+  }}
+</button>
+
+<div *ngIf="mostrarCanceladas" class="mt-4">
+  <h4 class="text-muted">Reservas canceladas</h4>
+
+  <div class="reserva reserva-cancelada" *ngFor="let r of reservasCanceladas">
+    <h3>
+      Habitación {{ r.numeroHabitacion }} — {{ r.tipoHabitacion }}
+      <br />
+      <small class="text-muted">Hotel: {{ r.hotelNombre }}</small>
+    </h3>
+
+    <p><b>Entrada:</b> {{ r.fechaInicio }}</p>
+    <p><b>Salida:</b> {{ r.fechaFin }}</p>
+    <p><b>Precio:</b> ${{ r.precio }}</p>
+
+    <p>
+      <b>Estado: </b>
+      <span class="text-danger">{{ r.estado }}</span>
+    </p>
+  </div>
+</div>
+
 <div class="modal fade" id="modalEditarReserva" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title">Modificar fechas de reserva</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
       </div>
 
       <div class="modal-body">
+        <label class="form-label"> Nueva fecha de entrada: </label>
+        <input type="date" class="form-control" [(ngModel)]="nuevaEntrada" />
 
-        <label class="form-label">Nueva fecha de entrada:</label>
-        <input type="date" class="form-control" [(ngModel)]="nuevaEntrada">
-
-        <label class="form-label mt-3">Nueva fecha de salida:</label>
-        <input type="date" class="form-control" [(ngModel)]="nuevaSalida">
-
+        <label class="form-label mt-3"> Nueva fecha de salida: </label>
+        <input type="date" class="form-control" [(ngModel)]="nuevaSalida" />
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" (click)="guardarCambio()">Guardar cambios</button>
-      </div>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
 
+        <button class="btn btn-primary" (click)="guardarCambio()">
+          Guardar cambios
+        </button>
+      </div>
     </div>
   </div>
 </div>

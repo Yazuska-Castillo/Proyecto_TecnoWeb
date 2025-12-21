@@ -2,9 +2,10 @@
   <h2>{{ hotel?.nombre }}</h2>
   <p class="text-muted">{{ hotel?.ubicacion }}</p>
 
-  <!-- ⭐ NUEVO: Selección de fechas -->
-  <div class="filtros-fechas mb-3 d-flex align-items-center">
-    <div class="me-3">
+  <!-- FILTROS -->
+  <div class="row align-items-end mb-4">
+    <!-- Fecha entrada -->
+    <div class="col-md-3">
       <label class="form-label">Fecha entrada</label>
       <input
         type="date"
@@ -14,7 +15,8 @@
       />
     </div>
 
-    <div class="me-3">
+    <!-- Fecha salida -->
+    <div class="col-md-3">
       <label class="form-label">Fecha salida</label>
       <input
         type="date"
@@ -23,17 +25,20 @@
         (change)="cargarDatos()"
       />
     </div>
-  </div>
 
-  <!-- Cantidad de personas -->
-  <label class="form-label mt-3">¿Cuántas personas?</label>
-  <input
-    type="number"
-    class="form-control w-25 mb-4"
-    [(ngModel)]="personas"
-    min="1"
-    max="6"
-  />
+    <!-- Personas -->
+    <div class="col-md-3">
+      <label class="form-label">Personas</label>
+      <input
+        type="number"
+        class="form-control"
+        [(ngModel)]="personas"
+        min="1"
+        max="6"
+        (change)="cargarDatos()"
+      />
+    </div>
+  </div>
 
   <!-- ⭐ NUEVO: Mensaje si no hay habitaciones -->
   <div *ngIf="habitaciones.length === 0" class="alert alert-warning">
@@ -42,78 +47,144 @@
 
   <!-- Lista de habitaciones -->
   <div class="row mt-3">
-    <div class="col-md-4 mb-3" *ngFor="let r of habitaciones">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5>{{ r.type }}</h5>
-          <p>N° {{ r.number }}</p>
+    <div class="col-md-4 mb-4" *ngFor="let r of habitaciones">
+      <div class="card shadow-sm h-100">
+        <!-- IMÁGENES -->
+        <div *ngIf="r.images?.length > 0">
+          <div
+            id="carousel-{{ r.id }}"
+            class="carousel slide"
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div
+                class="carousel-item"
+                *ngFor="let img of r.images; let i = index"
+                [class.active]="i === 0"
+              >
+                <img
+                  [src]="img"
+                  class="d-block w-100 rounded-top"
+                  style="height: 200px; object-fit: cover"
+                />
+              </div>
+            </div>
 
-          <!-- Sin promoción activa -->
-          <p *ngIf="!promoActiva">💲 {{ r.pricePerNight }} / noche</p>
+            <!-- Controles -->
+            <button
+              class="carousel-control-prev"
+              type="button"
+              [attr.data-bs-target]="'#carousel-' + r.id"
+              data-bs-slide="prev"
+            >
+              <span class="carousel-control-prev-icon"></span>
+            </button>
 
-          <!-- Con promoción activa -->
-          <div *ngIf="promoActiva">
-            <p class="mb-1">
+            <button
+              class="carousel-control-next"
+              type="button"
+              [attr.data-bs-target]="'#carousel-' + r.id"
+              data-bs-slide="next"
+            >
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SIN IMAGEN -->
+        <div
+          *ngIf="!r.images || r.images.length === 0"
+          class="bg-light d-flex align-items-center justify-content-center rounded-top"
+          style="height: 200px"
+        >
+          <span class="text-muted">Sin imágenes</span>
+        </div>
+
+        <!-- CUERPO -->
+        <div class="card-body d-flex flex-column">
+          <!-- Tipo + Número -->
+          <h5 class="mb-1">{{ r.type }}</h5>
+          <small class="text-muted mb-2">Habitación Nº {{ r.number }}</small>
+
+          <!-- Descripción -->
+          <p class="small text-muted mb-2" style="min-height: 48px">
+            {{ r.description }}
+          </p>
+
+          <!-- Capacidad -->
+          <p class="mb-1">
+            👥 Capacidad: <strong>{{ r.capacity }}</strong> personas
+          </p>
+
+          <!-- Precio -->
+          <div class="mb-3">
+            <span *ngIf="!promoActiva">
+              💲 <strong>{{ r.pricePerNight }}</strong> / noche
+            </span>
+
+            <span *ngIf="promoActiva">
               <span class="text-muted text-decoration-line-through">
                 ${{ r.pricePerNight }}
               </span>
-            </p>
-            <p class="mb-1">
+              <br />
               💲
-              <span class="fw-bold text-success">
+              <strong class="text-success">
                 {{ calcularPrecioConPromo(r) }} / noche
-              </span>
+              </strong>
               <span class="badge bg-success ms-1">
                 {{ promoActiva.nombre }}
               </span>
-            </p>
+            </span>
           </div>
 
-          <p>Capacidad: {{ r.capacity }} personas</p>
-
-          <button class="btn btn-success w-100" (click)="reservar(r)">
+          <!-- BOTÓN ABAJO SIEMPRE -->
+          <button class="btn btn-success w-100 mt-auto" (click)="reservar(r)">
             Reservar
           </button>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- MODAL: Inicio de sesión requerido -->
-<div
-  class="modal fade"
-  id="modalLoginNecesario"
-  tabindex="-1"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Debes iniciar sesión</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-        ></button>
-      </div>
+  <!-- MODAL: Inicio de sesión requerido -->
+  <div
+    class="modal fade"
+    id="modalLoginNecesario"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Debes iniciar sesión</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
 
-      <div class="modal-body">
-        Para realizar una reserva necesitas iniciar sesión o registrarte.
-      </div>
+        <div class="modal-body">
+          Para realizar una reserva necesitas iniciar sesión o registrarte.
+        </div>
 
-      <div class="modal-footer">
-        <a routerLink="/login" class="btn btn-primary" data-bs-dismiss="modal">
-          Iniciar sesión
-        </a>
+        <div class="modal-footer">
+          <a
+            routerLink="/login"
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+          >
+            Iniciar sesión
+          </a>
 
-        <a
-          routerLink="/registro"
-          class="btn btn-outline-secondary"
-          data-bs-dismiss="modal"
-        >
-          Registrarme
-        </a>
+          <a
+            routerLink="/registro"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
+          >
+            Registrarme
+          </a>
+        </div>
       </div>
     </div>
   </div>

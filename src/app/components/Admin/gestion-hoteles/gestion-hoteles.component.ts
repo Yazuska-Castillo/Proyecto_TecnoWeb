@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { Hotel } from 'src/app/models/hotel';
 import { HotelesService } from 'src/app/services/hoteles.service';
+import { CryptoService } from 'src/app/services/crypto.service';
 
 @Component({
   selector: 'app-gestion-hoteles',
@@ -52,10 +53,10 @@ export class GestionHotelesComponent implements OnInit {
   editando = false;
   hotelSeleccionado: Hotel | null = null;
 
-  imagenesPreview: string[] = []; 
+  imagenesPreview: string[] = [];
   imagenesError: string = '';
-  archivosSeleccionados: File[] = []; 
-  
+  archivosSeleccionados: File[] = [];
+
   archivosSeleccionadosEditar: File[] = [];
 
   constructor(
@@ -129,36 +130,36 @@ export class GestionHotelesComponent implements OnInit {
 
   onImagenesSeleccionadas(event: any): void {
     const input = event.target as HTMLInputElement;
-    
+
     if (!input.files || input.files.length === 0) {
       return;
     }
-    
+
     const archivos: File[] = Array.from(input.files);
     this.imagenesError = '';
-    
+
     // Validar cantidad máxima
-    const totalImagenes = this.editando 
+    const totalImagenes = this.editando
       ? (this.hotelSeleccionado?.imagenes?.length || 0) + archivos.length
       : archivos.length;
-    
+
     if (totalImagenes > 10) {
       this.imagenesError = 'Máximo 10 imágenes permitidas por hotel';
       return;
     }
-    
+
     // Validar tamaño y tipo
     const maxSize = 5 * 1024 * 1024;
     const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
-    
+
     for (let i = 0; i < archivos.length; i++) {
       const archivo = archivos[i];
-      
+
       if (!tiposPermitidos.includes(archivo.type)) {
         this.imagenesError = `El archivo ${archivo.name} no es una imagen válida (solo JPG, PNG, WebP)`;
         return;
       }
-      
+
       if (archivo.size > maxSize) {
         this.imagenesError = `La imagen ${archivo.name} es muy grande (máximo 5MB)`;
         return;
@@ -167,13 +168,13 @@ export class GestionHotelesComponent implements OnInit {
 
     if (this.editando) {
       this.archivosSeleccionadosEditar = [
-        ...this.archivosSeleccionadosEditar, 
-        ...archivos as File[]
+        ...this.archivosSeleccionadosEditar,
+        ...(archivos as File[]),
       ];
     } else {
       this.archivosSeleccionados = [
-        ...this.archivosSeleccionados, 
-        ...archivos as File[]
+        ...this.archivosSeleccionados,
+        ...(archivos as File[]),
       ];
     }
 
@@ -190,7 +191,7 @@ export class GestionHotelesComponent implements OnInit {
 
   eliminarImagenPreview(index: number): void {
     this.imagenesPreview.splice(index, 1);
-    
+
     if (this.editando) {
       this.archivosSeleccionadosEditar.splice(index, 1);
     } else {
@@ -213,8 +214,9 @@ export class GestionHotelesComponent implements OnInit {
     }
 
     // Validar imágenes
-    const totalImagenes = this.editando 
-      ? (this.hotelSeleccionado?.imagenes?.length || 0) + this.imagenesPreview.length
+    const totalImagenes = this.editando
+      ? (this.hotelSeleccionado?.imagenes?.length || 0) +
+        this.imagenesPreview.length
       : this.imagenesPreview.length;
 
     if (totalImagenes < 2) {
@@ -231,32 +233,41 @@ export class GestionHotelesComponent implements OnInit {
     if (this.editando && this.hotelSeleccionado) {
       const nuevasImagenesBase64: string[] = [];
       if (this.archivosSeleccionadosEditar.length > 0) {
-        nuevasImagenesBase64.push(...await this.procesarArchivosABase64(this.archivosSeleccionadosEditar));
+        nuevasImagenesBase64.push(
+          ...(await this.procesarArchivosABase64(
+            this.archivosSeleccionadosEditar
+          ))
+        );
       }
 
       const todasLasImagenes = [
         ...(this.hotelSeleccionado.imagenes || []),
-        ...nuevasImagenesBase64
+        ...nuevasImagenesBase64,
       ];
 
       const hotelActualizado: Hotel = {
         ...hotelData,
         id: this.hotelSeleccionado.id,
-        imagenes: todasLasImagenes
+        imagenes: todasLasImagenes,
       };
-      
-      console.log(`✏️ Actualizando hotel ${hotelActualizado.nombre} con ${todasLasImagenes.length} imágenes`);
+
+      console.log(
+        `✏️ Actualizando hotel ${hotelActualizado.nombre} con ${todasLasImagenes.length} imágenes`
+      );
       this.hotelService.actualizarHotel(hotelActualizado);
-      
     } else {
-      const imagenesBase64 = await this.procesarArchivosABase64(this.archivosSeleccionados);
+      const imagenesBase64 = await this.procesarArchivosABase64(
+        this.archivosSeleccionados
+      );
 
       const nuevoHotel: Hotel = {
         ...hotelData,
-        imagenes: imagenesBase64
+        imagenes: imagenesBase64,
       };
-      
-      console.log(`🏨 Creando nuevo hotel ${nuevoHotel.nombre} con ${imagenesBase64.length} imágenes`);
+
+      console.log(
+        `🏨 Creando nuevo hotel ${nuevoHotel.nombre} con ${imagenesBase64.length} imágenes`
+      );
       this.hotelService.agregarHotel(nuevoHotel);
     }
 
@@ -265,7 +276,7 @@ export class GestionHotelesComponent implements OnInit {
   }
 
   private async procesarArchivosABase64(archivos: File[]): Promise<string[]> {
-    const promesas = archivos.map(archivo => this.fileToBase64(archivo));
+    const promesas = archivos.map((archivo) => this.fileToBase64(archivo));
     return await Promise.all(promesas);
   }
 
@@ -285,11 +296,11 @@ export class GestionHotelesComponent implements OnInit {
   abrirModalAgregar() {
     this.editando = false;
     this.hotelSeleccionado = null;
-    this.formHotel.reset({ 
-      categoria: 1, 
-      habitaciones: 1 
+    this.formHotel.reset({
+      categoria: 1,
+      habitaciones: 1,
     });
-    
+
     // Limpiar imágenes
     this.imagenesPreview = [];
     this.archivosSeleccionados = [];
@@ -301,22 +312,26 @@ export class GestionHotelesComponent implements OnInit {
 
     const hotelCompleto = this.hotelService.getHotelById(hotel.id) || hotel;
     this.hotelSeleccionado = { ...hotelCompleto };
-    
+
     this.formHotel.patchValue({
       nombre: hotelCompleto.nombre,
       ubicacion: hotelCompleto.ubicacion,
       categoria: hotelCompleto.categoria,
       habitaciones: hotelCompleto.habitaciones,
       descripcion: hotelCompleto.descripcion,
-      mapaUrl: hotelCompleto.mapaUrl
+      mapaUrl: hotelCompleto.mapaUrl,
     });
-    
+
     // Limpiar imágenes nuevas (mantener las existentes en hotelSeleccionado.imagenes)
     this.imagenesPreview = [];
     this.archivosSeleccionadosEditar = [];
     this.imagenesError = '';
-    
-    console.log(`📂 Editando hotel: ${hotelCompleto.nombre} con ${hotelCompleto.imagenes?.length || 0} imágenes`);
+
+    console.log(
+      `📂 Editando hotel: ${hotelCompleto.nombre} con ${
+        hotelCompleto.imagenes?.length || 0
+      } imágenes`
+    );
   }
 
   eliminarHotel(id: number) {
@@ -332,7 +347,7 @@ export class GestionHotelesComponent implements OnInit {
     this.hotelSeleccionado = null;
     this.formHotel.reset({
       categoria: 1,
-      habitaciones: 1
+      habitaciones: 1,
     });
 
     this.imagenesPreview = [];
@@ -342,14 +357,14 @@ export class GestionHotelesComponent implements OnInit {
   }
 
   cerrarModal(): void {
-  const modalElement = document.getElementById('hotelModal');
-  if (modalElement) {
-    const modal = bootstrap.Modal.getInstance(modalElement);
-    if (modal) {
-      modal.hide();
+    const modalElement = document.getElementById('hotelModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
     }
   }
-}
 
   verHabitacionesHotel(hotelId: number) {
     this.router.navigate(['/admin/habitaciones'], {
@@ -364,7 +379,7 @@ export class GestionHotelesComponent implements OnInit {
     console.log('Imágenes preview:', this.imagenesPreview.length);
     console.log('Archivos seleccionados:', this.archivosSeleccionados.length);
     console.log('Archivos edición:', this.archivosSeleccionadosEditar.length);
-    
+
     // Info del service
     const totalImagenes = this.hotelService.contarImagenesHoteles();
     const espacio = this.hotelService.obtenerEspacioImagenes();
@@ -377,7 +392,9 @@ export class GestionHotelesComponent implements OnInit {
     console.log(`🔄 Recargando imágenes del hotel ${hotelId}`);
     const hotel = this.hotelService.getHotelById(hotelId);
     if (hotel) {
-      console.log(`✅ Hotel recargado con ${hotel.imagenes?.length || 0} imágenes`);
+      console.log(
+        `✅ Hotel recargado con ${hotel.imagenes?.length || 0} imágenes`
+      );
     }
   }
 }

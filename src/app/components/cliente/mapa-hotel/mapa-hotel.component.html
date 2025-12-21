@@ -23,7 +23,8 @@
           style="cursor: pointer"
         >
           <div class="card-body">
-            <h5 class="card-title">{{ hotel.nombre }}</h5>
+            <h5 class="hotel-nombre mb-1">{{ hotel.nombre }}</h5>
+
             <p class="card-text text-muted mb-2">{{ hotel.ubicacion }}</p>
 
             <div class="mb-3">
@@ -42,13 +43,15 @@
     <div class="row mt-5 g-4" *ngIf="hotelSeleccionado">
       <div class="col-md-6">
         <div class="texto-box">
-          <h4 class="mb-3">{{ hotelSeleccionado.nombre }}</h4>
-          <p>{{ descripcionActual }}</p>
+          <h2 class="hotel-titulo">{{ hotelSeleccionado.nombre }}</h2>
+
+          <p class="descripcion">
+            {{ descripcionActual }}
+          </p>
+
           <button
-            class="btn btn-primary w-100"
-            (click)="
-              verHabitaciones(hotelSeleccionado.id); $event.stopPropagation()
-            "
+            class="btn btn-primary w-100 mt-auto"
+            (click)="verHabitaciones(hotelSeleccionado.id)"
           >
             Ver habitaciones
           </button>
