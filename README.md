@@ -1,46 +1,104 @@
-Proyecto desarrollado en Angular 15, que simula un sistema de gestión hotelera para una franquicia de hoteles.
-Permite a clientes buscar hoteles, reservar habitaciones y gestionar sus reservas, y a administradores gestionar hoteles, habitaciones y promociones.
+# ProyectoTecnoWeb 
 
-Tecnologías utilizadas
-Angular 15
-TypeScript
-Bootstrap 5
-CryptoJS (hash y cifrado)
-LocalStorage / SessionStorage
-Angular Router
-Guards de autenticación y autorización
+Proyecto académico desarrollado en **Angular 15**, que simula un **sistema de gestión hotelera** para una franquicia de hoteles.
 
-1. Instalar dependencias
-   `npm install`
-3. Ejecutar servidor de desarrollo
-   `ng serve` o `ng s`
+La aplicación permite a:
+- **Clientes** buscar hoteles, reservar habitaciones y gestionar sus reservas.
+- **Administradores** gestionar hoteles, habitaciones y promociones.
 
-Cómo ejecutar el proyecto  
-# ProyectoTecnoWeb
+El proyecto no utiliza backend real, toda la información se gestiona mediante **LocalStorage y SessionStorage**, simulando un entorno real de autenticación y autorización.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.11.
+---
 
-## Development server
+## 🚀 Tecnologías utilizadas
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Angular 15
+- TypeScript
+- Bootstrap 5
+- CryptoJS (hash y cifrado)
+- LocalStorage / SessionStorage
+- Angular Router
+- Guards de autenticación y autorización
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 👥 Roles del sistema
 
-## Build
+### Cliente
+- Registro e inicio de sesión
+- Visualización de hoteles
+- Reserva de habitaciones
+- Historial de reservas
+- Modificación y cancelación de reservas
+- Configuración de perfil (cambio de contraseña)
+- Ajustes de la aplicación (tema oscuro)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Administrador
+- Gestión de hoteles
+- Gestión de habitaciones
+- Gestión de promociones
+- Acceso protegido mediante guards
 
-## Running unit tests
+---
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## 🔐 Seguridad (nivel académico)
 
-## Running end-to-end tests
+- Contraseñas almacenadas mediante **hash SHA-256**
+- Roles y datos sensibles cifrados con **AES (CryptoJS)**
+- Control de acceso mediante **Guards**
+- Token de sesión en `SessionStorage`
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+---
 
-## Further help
+## 📦 Instalación del proyecto
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Instalar las dependencias del proyecto:
+
+    npm install
+
+---
+
+## ▶️ Ejecución del proyecto
+
+Ejecutar el servidor de desarrollo:
+
+    ng serve
+
+o alternativamente:
+
+    ng s
+
+Luego abrir en el navegador:
+
+    http://localhost:4200/
+
+---
+
+## 🧪 Desarrollo
+
+Proyecto generado con **Angular CLI 15.2.11**.
+
+Comandos útiles:
+
+    ng generate component component-name
+    ng generate service service-name
+    ng generate guard nombre-del-guard
+o alternativamente:
+
+    ng g c component-name
+    ng g s service-name
+    ng g guard nombre-del-guard
+    
+---
+
+## 📌 Notas
+
+- Proyecto con fines **académicos**
+- Enfocado en rutas, guards, autenticación y lógica de negocio en Angular
+
+---
+
+## ✨ Autor
+Grupo Gryffindor 
+Proyecto académico desarrollado con Angular 15.
 
