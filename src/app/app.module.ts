@@ -12,6 +12,10 @@ import { GestionPromocionesComponent } from './components/Admin/gestion-promocio
 import { LoginComponent } from './components/login/login.component';
 import { GestionHabitacionesComponent } from './components/Admin/gestion-habitaciones/gestion-habitaciones.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { RegistroComponent } from './components/cliente/registro/registro.component';
 import { redireccionarComponent } from './components/redireccionar/redireccionar.component';
@@ -21,6 +25,7 @@ import { ReservaClienteComponent } from './components/cliente/reserva-cliente/re
 import { PantallaPrincipalComponent } from './components/pantalla-principal/pantalla-principal.component';
 import { MapaHotelComponent } from './components/cliente/mapa-hotel/mapa-hotel.component';
 import { ConfiguracionComponent } from './components/cliente/configuracion/configuracion.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -47,6 +52,11 @@ import { ConfiguracionComponent } from './components/cliente/configuracion/confi
     ReactiveFormsModule,
     NgbModule,
     NgbDropdownModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

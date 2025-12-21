@@ -1,5 +1,4 @@
 <div class="reserva-container" *ngIf="habitacion">
-
   <h2>🏨 Reserva en {{ habitacion.hotel }}</h2>
 
   <div class="habitacion-info">
@@ -16,9 +15,7 @@
       <span class="text-muted text-decoration-line-through me-1">
         ${{ habitacion.pricePerNight }}
       </span>
-      <span class="precio">
-        ${{ precioPorNocheConPromo }}
-      </span>
+      <span class="precio"> ${{ precioPorNocheConPromo }} </span>
       <span class="badge bg-success ms-1">
         {{ promoActiva.nombre }}
       </span>
@@ -28,26 +25,43 @@
   </div>
 
   <hr />
+  <small class="text-muted">
+    La fecha de salida corresponde al check-out y no se considera noche ocupada.
+  </small>
 
   <!-- Selección de fechas -->
-  <div class="fechas">
-    <label>
-      Fecha de entrada:
-      <input type="date" [(ngModel)]="fechaEntrada" (change)="calcularTotal()">
-    </label>
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Selecciona tus fechas</mat-label>
 
-    <label>
-      Fecha de salida:
-      <input type="date" [(ngModel)]="fechaSalida" (change)="calcularTotal()">
-    </label>
-  </div>
+    <mat-date-range-input [rangePicker]="picker" [dateFilter]="fechaDisponible">
+      <input
+        matStartDate
+        placeholder="Entrada"
+        (dateChange)="onEntradaChange($event.value)"
+      />
+      <input
+        matEndDate
+        placeholder="Salida"
+        (dateChange)="onSalidaChange($event.value)"
+      />
+    </mat-date-range-input>
+
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+
+    <mat-date-range-picker
+      #picker
+      touchUi="true"
+      [dateClass]="dateClass"
+    ></mat-date-range-picker>
+  </mat-form-field>
 
   <div class="total" *ngIf="total > 0">
-    <h3>Total: <span class="precio">${{ total }}</span></h3>
+    <h3>
+      Total: <span class="precio">${{ total }}</span>
+    </h3>
   </div>
 
   <button class="btn-reservar" (click)="reservar()">Confirmar reserva</button>
-
 </div>
 
 <div *ngIf="!habitacion">
