@@ -20,6 +20,9 @@ export class ReservaClienteComponent implements OnInit {
   promoActiva: Promo | null = null;
   precioPorNocheConPromo!: number;
 
+  promosDisponibles: Promo[] = [];
+  promoSeleccionada: Promo | null = null;
+
   reservasHabitacion: any[] = [];
 
   hotel!: string;
@@ -58,22 +61,49 @@ export class ReservaClienteComponent implements OnInit {
       this.personas = +params['personas'];
     });
 
-    this.roomsService.getRooms().subscribe((rooms) => {
+        this.roomsService.getRooms().subscribe((rooms) => {
       this.habitacion = rooms.find((r) => r.id === this.habitacionId);
       if (!this.habitacion) return;
 
-      this.promoActiva = this.promosService.getMejorPromo();
-
-      const base =
-        this.habitacion.pricePorNoche ?? this.habitacion.pricePerNight;
-
-      this.precioPorNocheConPromo =
-        this.promosService.calcularPrecioConPromo(base);
 
       this.cargarReservasHabitacion();
       this.syncFechasYTotal();
     });
   }
+
+actualizarPromosYPrecio() {
+  if (!this.habitacion) return;
+
+  const base = this.habitacion.pricePorNoche ?? this.habitacion.pricePerNight;
+
+  const fechaRef = this.rangoSeleccionado?.start ?? new Date();
+  this.promosDisponibles = this.promosService.getPromosActivas(fechaRef);
+  this.promoActiva = this.promosService.getMejorPromo();
+
+  // si la seleccionada ya no está disponible, resetea
+  if (
+    this.promoSeleccionada &&
+    !this.promosDisponibles.some((p) => p.id === this.promoSeleccionada!.id)
+  ) {
+    this.promoSeleccionada = null;
+  }
+
+  let precioFinal = base;
+
+  const promo = this.promoSeleccionada ?? this.promoActiva;
+
+  if (promo) {
+    if (promo.tipo === 'porcentaje') {
+      const desc = base * (promo.valor / 100);
+      precioFinal = Math.max(0, Math.round(base - desc));
+    } else {
+      precioFinal = Math.max(0, base - promo.valor);
+    }
+  }
+
+  this.precioPorNocheConPromo = precioFinal;
+  this.calcularTotal();
+}
 
   cargarReservasHabitacion() {
     this.reservasHabitacion = this.reservasService
@@ -143,7 +173,7 @@ export class ReservaClienteComponent implements OnInit {
     if (start) this.fechaEntrada = this.toLocalDate(start);
     if (end) this.fechaSalida = this.toLocalDate(end);
 
-    this.calcularTotal();
+    this.actualizarPromosYPrecio();
   }
 
   calcularTotal() {
@@ -172,6 +202,7 @@ export class ReservaClienteComponent implements OnInit {
 
     this.total = noches * precio;
   }
+
 
   reservar() {
     if (!this.rangoSeleccionado?.start || !this.rangoSeleccionado?.end) {
@@ -222,3 +253,4 @@ export class ReservaClienteComponent implements OnInit {
     return `${y}-${m}-${day}`;
   }
 }
+
