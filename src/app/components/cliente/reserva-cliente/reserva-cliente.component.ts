@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { RoomsService } from 'src/app/services/room.service';
 import { ReservasService } from 'src/app/services/reservas.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PromocionesService } from 'src/app/services/promociones.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { Promo } from 'src/app/models/promo.model';
+import { DateRange } from '@angular/material/datepicker';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-reserva-cliente',
@@ -13,12 +15,15 @@ import { Promo } from 'src/app/models/promo.model';
   styleUrls: ['./reserva-cliente.component.css'],
 })
 export class ReservaClienteComponent implements OnInit {
+  rangoSeleccionado: DateRange<Date> | null = new DateRange<Date>(null, null);
+
   promoActiva: Promo | null = null;
   precioPorNocheConPromo!: number;
 
   promosDisponibles: Promo[] = [];
   promoSeleccionada: Promo | null = null;
 
+  reservasHabitacion: any[] = [];
 
   hotel!: string;
   habitacionId!: number;
@@ -42,16 +47,31 @@ export class ReservaClienteComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.habitacion) {
+          this.cargarReservasHabitacion();
+        }
+      });
+
     this.route.queryParams.subscribe((params) => {
       this.hotel = params['hotel'];
       this.habitacionId = +params['habitacion'];
       this.personas = +params['personas'];
     });
 
-    this.promoActiva = this.promosService.getMejorPromo();
-    this.actualizarPromosYPrecio();
+        this.roomsService.getRooms().subscribe((rooms) => {
+      this.habitacion = rooms.find((r) => r.id === this.habitacionId);
+      if (!this.habitacion) return;
 
+      this.promoActiva = this.promosService.getMejorPromo();
+
+      this.cargarReservasHabitacion();
+      this.syncFechasYTotal();
+    });
   }
+
 
   actualizarPromosYPrecio() {
   if (!this.habitacion) return;
@@ -59,7 +79,13 @@ export class ReservaClienteComponent implements OnInit {
   const base =
     this.habitacion.pricePorNoche ?? this.habitacion.pricePerNight;
 
-  this.promosDisponibles = this.promosService.getPromosActivas(new Date());
+  const fechaRef = this.rangoSeleccionado?.start ?? new Date();
+  this.promosDisponibles = this.promosService.getPromosActivas(fechaRef);
+
+  if (
+  this.promoSeleccionada && !this.promosDisponibles.some(p => p.id === this.promoSeleccionada!.id)) {
+  this.promoSeleccionada = null;
+  }
 
   let precioFinal = base;
 
@@ -77,111 +103,163 @@ export class ReservaClienteComponent implements OnInit {
 }
 
 
+  cargarReservasHabitacion() {
+    this.reservasHabitacion = this.reservasService
+      .obtenerReservas()
+      .filter(
+        (r: any) =>
+          r.habitacionId === this.habitacion.id && r.estado === 'Confirmada'
+      );
+  }
+
+  fechaDisponible = (fecha: Date | null): boolean => {
+    if (!fecha) return false;
+
+    const dia = this.normalizar(fecha);
+
+    return !this.reservasHabitacion.some((r: any) => {
+      const inicio = this.normalizar(new Date(r.fechaInicio + 'T12:00:00'));
+      const fin = this.normalizar(new Date(r.fechaFin + 'T12:00:00'));
+
+      return dia >= inicio && dia < fin;
+    });
+  };
+
+  dateClass = (date: Date) => {
+    const dia = this.normalizar(date);
+
+    const ocupada = this.reservasHabitacion.some((r: any) => {
+      const inicio = this.normalizar(new Date(r.fechaInicio + 'T12:00:00'));
+      const fin = this.normalizar(new Date(r.fechaFin + 'T12:00:00'));
+
+      return dia >= inicio && dia < fin;
+    });
+
+    return ocupada ? 'ocupado' : '';
+  };
+
+  onEntradaChange(fecha: Date | null) {
+    if (!fecha) return;
+
+    const entrada = this.normalizar(fecha);
+
+    this.rangoSeleccionado = new DateRange<Date>(
+      entrada,
+      this.rangoSeleccionado?.end ?? null
+    );
+
+    this.syncFechasYTotal();
+  }
+
+  onSalidaChange(fecha: Date | null) {
+    if (!fecha) return;
+
+    const salida = this.normalizar(fecha);
+
+    this.rangoSeleccionado = new DateRange<Date>(
+      this.rangoSeleccionado?.start ?? null,
+      salida
+    );
+
+    this.syncFechasYTotal();
+  }
+
+  private syncFechasYTotal() {
+    const start = this.rangoSeleccionado?.start;
+    const end = this.rangoSeleccionado?.end;
+
+    if (start) this.fechaEntrada = this.toLocalDate(start);
+    if (end) this.fechaSalida = this.toLocalDate(end);
+
+    this.actualizarPromosYPrecio();
+  }
+
   calcularTotal() {
-    if (this.fechaEntrada && this.fechaSalida && this.habitacion) {
-      const entrada = new Date(this.fechaEntrada);
-      const salida = new Date(this.fechaSalida);
-      const diff = salida.getTime() - entrada.getTime();
+    const start = this.rangoSeleccionado?.start;
+    const end = this.rangoSeleccionado?.end;
 
-      if (diff > 0) {
-        const noches = diff / (1000 * 60 * 60 * 24);
-        const precioBase =
-          this.precioPorNocheConPromo ??
-          this.habitacion.pricePorNoche ??
-          this.habitacion.pricePerNight;
-
-        this.total = noches * precioBase;
-      } else {
-        this.total = 0;
-      }
+    if (!start || !end) {
+      this.total = 0;
+      return;
     }
+
+    const ini = this.normalizar(start);
+    const fin = this.normalizar(end);
+
+    const diff = fin.getTime() - ini.getTime();
+    if (diff <= 0) {
+      this.total = 0;
+      return;
+    }
+
+    const noches = diff / (1000 * 60 * 60 * 24);
+    const precio =
+      this.precioPorNocheConPromo ??
+      this.habitacion.pricePorNoche ??
+      this.habitacion.pricePerNight;
+
+    this.total = noches * precio;
   }
 
   reservar() {
-    if (!this.fechaEntrada || !this.fechaSalida) {
+    if (!this.rangoSeleccionado?.start || !this.rangoSeleccionado?.end) {
       alert('Debes seleccionar las fechas.');
       return;
     }
 
     const email = this.auth.getEmailDesdeToken();
-    if (!email) {
-      alert('Error: No hay usuario logueado.');
-      return;
-    }
+    if (!email) return;
 
     const usuario = this.usuariosService.buscarUsuarioPorEmail(email);
-    if (!usuario) {
-      alert('Error: Usuario no encontrado.');
-      return;
-    }
-
-    const entrada = new Date(this.fechaEntrada);
-    const salida = new Date(this.fechaSalida);
-
-    if (salida <= entrada) {
-      alert('Las fechas seleccionadas no son válidas.');
-      return;
-    }
-
-    const reservas = this.reservasService.obtenerReservas();
-
-    const reservasDeHabitacion = reservas.filter(
-      (r: any) => r.habitacionId === this.habitacion.id
-    );
-
-    const conflicto = reservasDeHabitacion.some((r: any) => {
-      const ini = new Date(r.fechaInicio);
-      const fin = new Date(r.fechaFin);
-      return entrada < fin && salida > ini;
-    });
-
-    if (conflicto) {
-      alert('❌ La habitación NO está disponible para esas fechas.');
-      return;
-    }
+    if (!usuario) return;
 
     const reserva = {
       id: Date.now(),
       habitacionId: this.habitacion.id,
       hotelId: this.habitacion.idHotel,
       hotelNombre: this.hotel,
-
       numeroHabitacion: this.habitacion.number,
       tipoHabitacion: this.habitacion.type,
-
-      fechaInicio: this.fechaEntrada,
-      fechaFin: this.fechaSalida,
-
+      fechaInicio: this.toLocalDate(this.rangoSeleccionado.start),
+      fechaFin: this.toLocalDate(this.rangoSeleccionado.end),
       precio:
         this.precioPorNocheConPromo ??
         this.habitacion.pricePorNoche ??
         this.habitacion.pricePerNight,
-
       estado: 'Confirmada',
-
       usuarioEmail: usuario.email,
       usuarioNombre: usuario.nombre,
     };
 
     this.reservasService.agregarReserva(reserva);
-    this.roomsService.actualizarEstadoHabitacion(this.habitacion.id, 'Ocupada');
-
+    this.cargarReservasHabitacion();
     alert('✔ Reserva realizada con éxito');
     this.router.navigate(['/cliente/historial']);
   }
   
-  seleccionarPromo(promoId: string | null) {
-  if (!promoId) {
-    this.promoSeleccionada = null;
-  } else {
-    this.promoSeleccionada =
-      this.promosDisponibles.find((p: Promo) => p.id === +promoId) || null;
+    seleccionarPromo(promoId: string | null) {
+    if (!promoId) {
+      this.promoSeleccionada = null;
+    } else {
+      this.promoSeleccionada =
+        this.promosDisponibles.find((p: Promo) => p.id === +promoId) || null;
+    }
+
+    this.actualizarPromosYPrecio();
   }
 
-  this.actualizarPromosYPrecio();
-}
+    private normalizar(d: Date): Date {
+    const x = new Date(d);
+    x.setHours(12, 0, 0, 0);
+    return x;
+  }
 
-
+  private toLocalDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
 
 }
 
