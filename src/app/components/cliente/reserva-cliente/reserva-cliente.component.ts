@@ -65,25 +65,27 @@ export class ReservaClienteComponent implements OnInit {
       this.habitacion = rooms.find((r) => r.id === this.habitacionId);
       if (!this.habitacion) return;
 
+
       this.cargarReservasHabitacion();
       this.syncFechasYTotal();
     });
   }
 
-
-  actualizarPromosYPrecio() {
+actualizarPromosYPrecio() {
   if (!this.habitacion) return;
 
-  const base =
-    this.habitacion.pricePorNoche ?? this.habitacion.pricePerNight;
+  const base = this.habitacion.pricePorNoche ?? this.habitacion.pricePerNight;
 
   const fechaRef = this.rangoSeleccionado?.start ?? new Date();
   this.promosDisponibles = this.promosService.getPromosActivas(fechaRef);
   this.promoActiva = this.promosService.getMejorPromo();
 
+  // si la seleccionada ya no está disponible, resetea
   if (
-  this.promoSeleccionada && !this.promosDisponibles.some(p => p.id === this.promoSeleccionada!.id)) {
-  this.promoSeleccionada = null;
+    this.promoSeleccionada &&
+    !this.promosDisponibles.some((p) => p.id === this.promoSeleccionada!.id)
+  ) {
+    this.promoSeleccionada = null;
   }
 
   let precioFinal = base;
@@ -95,15 +97,13 @@ export class ReservaClienteComponent implements OnInit {
       const desc = base * (promo.valor / 100);
       precioFinal = Math.max(0, Math.round(base - desc));
     } else {
-    precioFinal = Math.max(0, base - promo.valor);
+      precioFinal = Math.max(0, base - promo.valor);
     }
   }
-
 
   this.precioPorNocheConPromo = precioFinal;
   this.calcularTotal();
 }
-
 
   cargarReservasHabitacion() {
     this.reservasHabitacion = this.reservasService
@@ -203,6 +203,7 @@ export class ReservaClienteComponent implements OnInit {
     this.total = noches * precio;
   }
 
+
   reservar() {
     if (!this.rangoSeleccionado?.start || !this.rangoSeleccionado?.end) {
       alert('Debes seleccionar las fechas.');
@@ -239,7 +240,7 @@ export class ReservaClienteComponent implements OnInit {
     this.router.navigate(['/cliente/historial']);
   }
 
-    private normalizar(d: Date): Date {
+  private normalizar(d: Date): Date {
     const x = new Date(d);
     x.setHours(12, 0, 0, 0);
     return x;
@@ -251,6 +252,5 @@ export class ReservaClienteComponent implements OnInit {
     const day = String(d.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
   }
-
 }
 

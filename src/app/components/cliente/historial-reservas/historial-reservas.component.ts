@@ -10,8 +10,13 @@ import * as bootstrap from 'bootstrap';
   styleUrls: ['./historial-reservas.component.css'],
 })
 export class HistorialReservasComponent implements OnInit {
-  reservas: any[] = [];
+  // 🔹 Listas separadas
+  reservasConfirmadas: any[] = [];
+  reservasCanceladas: any[] = [];
 
+  mostrarCanceladas = false;
+
+  // 🔹 Modal edición
   reservaEditando: any = null;
   nuevaEntrada: string = '';
   nuevaSalida: string = '';
@@ -24,18 +29,34 @@ export class HistorialReservasComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const email = this.auth.getEmailDesdeToken();
-    if (!email) return;
-
-    const todas = this.reservasService.obtenerReservas();
-    this.reservas = todas.filter((r: any) => r.usuarioEmail === email);
+    this.cargarReservasUsuario();
   }
 
   // =====================================================
-  // ✔ Abrir modal
+  // 🔄 Cargar y separar reservas del usuario
+  // =====================================================
+  cargarReservasUsuario() {
+    const email = this.auth.getEmailDesdeToken();
+    if (!email) return;
+
+    const todas = this.reservasService
+      .obtenerReservas()
+      .filter((r: any) => r.usuarioEmail === email);
+
+    this.reservasConfirmadas = todas.filter(
+      (r: any) => r.estado === 'Confirmada'
+    );
+
+    this.reservasCanceladas = todas.filter(
+      (r: any) => r.estado === 'Cancelada'
+    );
+  }
+
+  // =====================================================
+  // ✔ Abrir modal editar fechas
   // =====================================================
   modificar(reserva: any) {
-    this.reservaEditando = reserva;
+    this.reservaEditando = { ...reserva }; // copia segura
     this.nuevaEntrada = reserva.fechaInicio;
     this.nuevaSalida = reserva.fechaFin;
 
@@ -45,7 +66,7 @@ export class HistorialReservasComponent implements OnInit {
   }
 
   // =====================================================
-  // ✔ Guardar cambio de fechas
+  // ✔ Guardar cambios de fechas
   // =====================================================
   guardarCambio() {
     if (!this.nuevaEntrada || !this.nuevaSalida) {
@@ -53,45 +74,48 @@ export class HistorialReservasComponent implements OnInit {
       return;
     }
 
-    this.reservaEditando.fechaInicio = this.nuevaEntrada;
-    this.reservaEditando.fechaFin = this.nuevaSalida;
-
     const todas = this.reservasService.obtenerReservas();
-    const nuevas = todas.map((r: any) =>
-      r.id === this.reservaEditando.id ? this.reservaEditando : r
+
+    const actualizadas = todas.map((r: any) =>
+      r.id === this.reservaEditando.id
+        ? {
+            ...r,
+            fechaInicio: this.nuevaEntrada,
+            fechaFin: this.nuevaSalida,
+          }
+        : r
     );
 
-    this.reservasService.guardarReservas(nuevas);
+    this.reservasService.guardarReservas(actualizadas);
 
-    alert('Fechas modificadas correctamente ✔');
     this.modalRef.hide();
+    alert('Fechas modificadas correctamente ✔');
 
-    const email = this.auth.getEmailDesdeToken();
-    this.reservas = nuevas.filter((r: any) => r.usuarioEmail === email);
+    this.cargarReservasUsuario(); // 🔄 refresca listas
   }
 
   // =====================================================
-  // ✔ Cancelar reserva (libera habitación)
+  // ✔ Cancelar reserva (libera fechas)
   // =====================================================
   cancelar(reserva: any) {
     if (!confirm('¿Seguro que deseas cancelar esta reserva?')) return;
 
-    reserva.estado = 'Cancelada';
+    const todas = this.reservasService.obtenerReservas();
 
-    // Liberar habitación
+    const actualizadas = todas.map((r: any) =>
+      r.id === reserva.id ? { ...r, estado: 'Cancelada' } : r
+    );
+
+    this.reservasService.guardarReservas(actualizadas);
+
+    // 🔓 liberar habitación (estado general)
     this.roomsService.actualizarEstadoHabitacion(
       reserva.habitacionId,
       'Disponible'
     );
 
-    const todas = this.reservasService.obtenerReservas();
-    const nuevas = todas.map((r: any) => (r.id === reserva.id ? reserva : r));
-
-    this.reservasService.guardarReservas(nuevas);
-
     alert('Reserva cancelada ✔');
 
-    const email = this.auth.getEmailDesdeToken();
-    this.reservas = nuevas.filter((r: any) => r.usuarioEmail === email);
+    this.cargarReservasUsuario(); // 🔄 refresca listas
   }
 }

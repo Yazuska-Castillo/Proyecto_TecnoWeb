@@ -14,7 +14,6 @@ declare var bootstrap: any;
   styleUrls: ['./habitaciones-hotel.component.css'],
 })
 export class HabitacionesHotelComponent implements OnInit {
-  
   hotelId!: number;
   hotel: any;
   habitaciones: any[] = [];
@@ -22,8 +21,8 @@ export class HabitacionesHotelComponent implements OnInit {
   promoActiva: Promo | null = null;
 
   // ❗ NUEVO: Fechas seleccionadas
-  fechaEntrada: string = "";
-  fechaSalida: string = "";
+  fechaEntrada: string = '';
+  fechaSalida: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -42,38 +41,45 @@ export class HabitacionesHotelComponent implements OnInit {
     this.promoActiva = this.promocionesService.getMejorPromo();
   }
 
-  // ⭐ TOTALMENTE NUEVO: Solo muestra habitaciones sin reservas solapadas
+  // Solo muestra habitaciones sin reservas solapadas
   cargarDatos() {
     this.hotel = this.hotelesService
       .obtenerHoteles()
       .find((h) => h.id === this.hotelId);
 
-    this.roomsService.getRooms().subscribe((rooms) => {
-      const habs = rooms.filter((r) => r.hotel === this.hotel.nombre);
+    if (!this.hotel) return;
 
-      // Si no hay fechas → mostrar todo
-      if (!this.fechaEntrada || !this.fechaSalida) {
-        this.habitaciones = habs;
-        return;
+    const reservas = JSON.parse(localStorage.getItem('reservas') || '[]');
+
+    this.roomsService.getRooms().subscribe((rooms) => {
+      let habs = rooms
+        .filter((r) => r.hotel === this.hotel.nombre)
+        .map((r) => ({
+          ...r,
+          images: this.roomsService.cargarTodasImagenes(r.id),
+        }));
+
+      habs = habs.filter((r) => r.capacity >= this.personas);
+
+      if (this.fechaEntrada && this.fechaSalida) {
+        const entrada = this.normalizarFecha(this.fechaEntrada);
+        const salida = this.normalizarFecha(this.fechaSalida);
+
+        habs = habs.filter((hab) => {
+          const reservasHab = reservas.filter(
+            (r: any) => r.habitacionId === hab.id && r.estado !== 'Cancelada'
+          );
+          const hayCruce = reservasHab.some((r: any) => {
+            const ini = this.normalizarFecha(r.fechaInicio);
+            const fin = this.normalizarFecha(r.fechaFin);
+            return entrada < fin && salida >= ini;
+          });
+
+          return !hayCruce;
+        });
       }
 
-      const entrada = new Date(this.fechaEntrada);
-      const salida = new Date(this.fechaSalida);
-
-      const reservas = JSON.parse(localStorage.getItem("reservas") || "[]");
-
-      this.habitaciones = habs.filter((hab) => {
-        // Reservas asociadas a esta habitación
-        const reservasHab = reservas.filter((r: any) => r.idHabitacion === hab.id);
-
-        const conflicto = reservasHab.some((r: any) => {
-          const ini = new Date(r.fechaInicio);
-          const fin = new Date(r.fechaFin);
-          return entrada < fin && salida > ini;
-        });
-
-        return !conflicto;
-      });
+      this.habitaciones = habs;
     });
   }
 
@@ -99,9 +105,13 @@ export class HabitacionesHotelComponent implements OnInit {
       },
     });
   }
+  private normalizarFecha(fecha: string | Date): Date {
+    const d = new Date(fecha);
+    d.setHours(12, 0, 0, 0);
+    return d;
+  }
 
   calcularPrecioConPromo(hab: any): number {
     return this.promocionesService.calcularPrecioConPromo(hab.pricePerNight);
   }
-
 }

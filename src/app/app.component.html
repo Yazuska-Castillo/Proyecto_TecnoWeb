@@ -40,13 +40,6 @@
           <li class="nav-item">
             <a class="nav-link" routerLink="/">Inicio</a>
           </li>
-
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/cliente/historial">
-              Mis reservas
-            </a>
-          </li>
-
           <li class="nav-item">
             <a class="nav-link" routerLink="/cliente/hoteles-mapa">
               Ver hoteles
@@ -63,9 +56,9 @@
               <button
                 ngbDropdownItem
                 class="dropdown-item"
-                [routerLink]="['/configuracion']"
+                [routerLink]="['/cliente/historial']"
               >
-                Ajustes
+                Mis Reservas
               </button>
 
               <button
@@ -73,7 +66,7 @@
                 class="dropdown-item"
                 [routerLink]="['/configuracion']"
               >
-                Mi perfil
+                Ajustes
               </button>
 
               <div class="dropdown-divider"></div>
