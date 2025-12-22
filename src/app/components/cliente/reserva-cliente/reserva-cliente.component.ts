@@ -65,8 +65,6 @@ export class ReservaClienteComponent implements OnInit {
       this.habitacion = rooms.find((r) => r.id === this.habitacionId);
       if (!this.habitacion) return;
 
-      this.promoActiva = this.promosService.getMejorPromo();
-
       this.cargarReservasHabitacion();
       this.syncFechasYTotal();
     });
@@ -81,6 +79,7 @@ export class ReservaClienteComponent implements OnInit {
 
   const fechaRef = this.rangoSeleccionado?.start ?? new Date();
   this.promosDisponibles = this.promosService.getPromosActivas(fechaRef);
+  this.promoActiva = this.promosService.getMejorPromo();
 
   if (
   this.promoSeleccionada && !this.promosDisponibles.some(p => p.id === this.promoSeleccionada!.id)) {
@@ -89,14 +88,17 @@ export class ReservaClienteComponent implements OnInit {
 
   let precioFinal = base;
 
-  if (this.promoSeleccionada) {
-    if (this.promoSeleccionada.tipo === 'porcentaje') {
-      const desc = base * (this.promoSeleccionada.valor / 100);
+  const promo = this.promoSeleccionada ?? this.promoActiva;
+
+  if (promo) {
+    if (promo.tipo === 'porcentaje') {
+      const desc = base * (promo.valor / 100);
       precioFinal = Math.max(0, Math.round(base - desc));
     } else {
-      precioFinal = Math.max(0, base - this.promoSeleccionada.valor);
+    precioFinal = Math.max(0, base - promo.valor);
     }
   }
+
 
   this.precioPorNocheConPromo = precioFinal;
   this.calcularTotal();
@@ -235,17 +237,6 @@ export class ReservaClienteComponent implements OnInit {
     this.cargarReservasHabitacion();
     alert('✔ Reserva realizada con éxito');
     this.router.navigate(['/cliente/historial']);
-  }
-  
-    seleccionarPromo(promoId: string | null) {
-    if (!promoId) {
-      this.promoSeleccionada = null;
-    } else {
-      this.promoSeleccionada =
-        this.promosDisponibles.find((p: Promo) => p.id === +promoId) || null;
-    }
-
-    this.actualizarPromosYPrecio();
   }
 
     private normalizar(d: Date): Date {

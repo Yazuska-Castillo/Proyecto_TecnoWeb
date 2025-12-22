@@ -34,25 +34,50 @@
   <hr />
 
   <!-- Selección de fechas -->
-  <div class="fechas">
-    <label>
-      Fecha de entrada:
-      <input type="date" [(ngModel)]="fechaEntrada" (change)="actualizarPromosYPrecio()">
-    </label>
+<mat-form-field appearance="outline" class="w-100">
+  <mat-label>Selecciona tus fechas</mat-label>
 
-    <label>
-      Fecha de salida:
-      <input type="date" [(ngModel)]="fechaSalida" (change)="actualizarPromosYPrecio()">
-    </label>
-  </div>
+  <mat-date-range-input
+    [rangePicker]="picker"
+    [dateFilter]="fechaDisponible"
+  >
+    <input
+      matStartDate
+      placeholder="Entrada"
+      (dateChange)="onEntradaChange($event.value)"
+    />
+    <input
+      matEndDate
+      placeholder="Salida"
+      (dateChange)="onSalidaChange($event.value)"
+    />
+  </mat-date-range-input>
+
+  <mat-datepicker-toggle
+    matSuffix
+    [for]="picker"
+  ></mat-datepicker-toggle>
+
+  <mat-date-range-picker
+    #picker
+    touchUi="true"
+    [dateClass]="dateClass"
+  ></mat-date-range-picker>
+</mat-form-field>
+
 
 <!-- Selección de promoción -->
 <div class="mt-3" *ngIf="promosDisponibles && promosDisponibles.length > 0">
   <label>
     Promoción:
-    <select class="form-select" #sel (change)="seleccionarPromo(sel.value)">
-      <option value="">Sin promoción</option>
-      <option *ngFor="let p of promosDisponibles" [value]="p.id">
+      <select
+        class="form-select"
+        [(ngModel)]="promoSeleccionada"
+        (ngModelChange)="actualizarPromosYPrecio()"
+      >
+      <option [ngValue]="null">Sin promoción</option>
+
+      <option *ngFor="let p of promosDisponibles" [ngValue]="p">
         {{ p.nombre }} —
         {{ p.tipo === 'porcentaje' ? (p.valor + '%') : ('$' + p.valor) }}
       </option>
